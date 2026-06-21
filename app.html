@@ -595,66 +595,6 @@
         });
     }
 
-    // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---
-    let suKienCaiDatApp;
-    const nutCaiDatApp = document.getElementById('nutCaiDatApp');
-
-    // 1. Lắng nghe tín hiệu thiết bị cho phép cài App
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Ngăn trình duyệt tự bật bảng thông báo mặc định
-        e.preventDefault();
-        // Lưu lại sự kiện để dùng khi bấm nút
-        suKienCaiDatApp = e;
-        // Bật hiển thị nút "Tải App" màu cam lên
-        if(nutCaiDatApp) nutCaiDatApp.style.display = 'block';
-    });
-
-    // 2. Xử lý khi nhân viên bấm vào nút "Tải App"
-    if(nutCaiDatApp) {
-        nutCaiDatApp.addEventListener('click', async () => {
-            if (!suKienCaiDatApp) return;
-            // Bật bảng hỏi cài đặt chính thức của hệ điều hành
-            suKienCaiDatApp.prompt();
-            // Đợi người dùng phản hồi (Đồng ý / Từ chối)
-            const { outcome } = await suKienCaiDatApp.userChoice;
-            if (outcome === 'accepted') {
-                console.log('App đã được cài đặt thành công!');
-                nutCaiDatApp.style.display = 'none'; // Cài xong thì ẩn nút đi
-            }
-            suKienCaiDatApp = null;
-        });
-    }
-
-    // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---
-    let suKienCaiDatApp;
-    const nutCaiDatApp = document.getElementById('nutCaiDatApp');
-
-    // 1. Lắng nghe tín hiệu thiết bị cho phép cài App
-    window.addEventListener('beforeinstallprompt', (e) => {
-        // Ngăn trình duyệt tự bật bảng thông báo mặc định
-        e.preventDefault();
-        // Lưu lại sự kiện để dùng khi bấm nút
-        suKienCaiDatApp = e;
-        // Bật hiển thị nút "Tải App" màu cam lên
-        if(nutCaiDatApp) nutCaiDatApp.style.display = 'block';
-    });
-
-    // 2. Xử lý khi nhân viên bấm vào nút "Tải App"
-    if(nutCaiDatApp) {
-        nutCaiDatApp.addEventListener('click', async () => {
-            if (!suKienCaiDatApp) return;
-            // Bật bảng hỏi cài đặt chính thức của hệ điều hành
-            suKienCaiDatApp.prompt();
-            // Đợi người dùng phản hồi (Đồng ý / Từ chối)
-            const { outcome } = await suKienCaiDatApp.userChoice;
-            if (outcome === 'accepted') {
-                console.log('App đã được cài đặt thành công!');
-                nutCaiDatApp.style.display = 'none'; // Cài xong thì ẩn nút đi
-            }
-            suKienCaiDatApp = null;
-        });
-    }
-
     // 3. Tự động ẩn nút nếu máy đã cài App rồi
     window.addEventListener('appinstalled', () => {
         if(nutCaiDatApp) nutCaiDatApp.style.display = 'none';
