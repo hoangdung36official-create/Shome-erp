@@ -132,7 +132,7 @@ app.post('/api/dang-nhap', async (req, res) => {
     }
 });
 
-// 4. BỘ PHÂN TÍCH GIỌNG NÓI AI (GẮN DANH MỤC TRỰC TRỰC TIẾP TỪ DATABASE)
+// 4. BỘ PHÂN TÍCH GIỌNG NÓI AI (NÂNG CẤP XỬ LÝ NHIỀU MỤC CÙNG LÚC)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post('/api/xuly-giongnoi', async (req, res) => {
@@ -144,34 +144,45 @@ app.post('/api/xuly-giongnoi', async (req, res) => {
         
         const ngayHienTai = new Date().toISOString().split('T')[0];
         
-        const prompt = `Bạn là trợ lý ảo thuộc hệ thống ERP vận hành xây dựng và căn hộ dịch vụ. Hôm nay là ngày ${ngayHienTai}.
-        Nhiệm vụ: Phân tích văn bản lệnh giọng nói và trích xuất thành định dạng JSON chuẩn 100%.
-        Quy tắc bắt buộc:
-        1. Trường "ten_cong_trinh": Đối chiếu và chọn đúng tên trong danh sách sau: [${danhSachGocCongTrinh}]. Nếu không khớp, ghi nhận từ nghe được.
-        2. Trường "ten_vat_tu": Đối chiếu và chọn đúng tên trong danh sách sau: [${danhSachGocVatTu}].
-        3. Trường "ngay_nhap": Định dạng YYYY-MM-DD. Nếu nói "hôm nay", điền luôn ${ngayHienTai}.
-        4. Trường "so_luong": Chỉ lấy giá trị số nguyên hoặc số thập phân sạch.
+        const prompt = `Bạn là trợ lý ảo ERP vận hành chuỗi tòa nhà. Hôm nay là ngày ${ngayHienTai}.
+        Nhiệm vụ: Phân tích lệnh giọng nói và trích xuất thành MỘT MẢNG JSON (JSON Array) chứa DANH SÁCH các vật tư.
+        Quy tắc:
+        1. "ten_cong_trinh": Chọn trong: [${danhSachGocCongTrinh}].
+        2. "ten_vat_tu": Chọn trong: [${danhSachGocVatTu}]. Nếu người dùng nói nhiều vật tư khác nhau, hãy tách ra thành nhiều mục.
+        3. "ngay_nhap": YYYY-MM-DD. Nếu nói "hôm nay", điền ${ngayHienTai}.
+        4. "so_luong": Chỉ lấy giá trị số. Nếu nói "1,8 tấn" thì so_luong là 1.8, don_vi là "tấn".
         
-        Cấu trúc JSON đầu ra bắt buộc:
-        {
-            "ngay_nhap": "YYYY-MM-DD",
-            "ten_cong_trinh": "Tên công trình",
-            "ten_vat_tu": "Tên vật tư",
-            "so_luong": số,
-            "don_vi": "Tên đơn vị tính",
-            "ghi_chu": "Thông tin bổ sung thêm"
-        }
-        Lưu ý: Chỉ trả về chuỗi dữ liệu JSON duy nhất, không thêm bất kỳ văn bản giải thích nào xung quanh.
-        Văn bản cần phân tích: "${req.body.text}"`;
+        Cấu trúc JSON đầu ra bắt buộc phải là một MẢNG (dù chỉ có 1 mục):
+        [
+            {
+                "ngay_nhap": "YYYY-MM-DD",
+                "ten_cong_trinh": "Tên công trình",
+                "ten_vat_tu": "Tên vật tư 1",
+                "so_luong": số,
+                "don_vi": "Tên đơn vị",
+                "ghi_chu": "Ghi chú nếu có"
+            },
+            {
+                "ngay_nhap": "YYYY-MM-DD",
+                "ten_cong_trinh": "Tên công trình",
+                "ten_vat_tu": "Tên vật tư 2",
+                "so_luong": số,
+                "don_vi": "Tên đơn vị",
+                "ghi_chu": "Ghi chú nếu có"
+            }
+        ]
+        Chỉ trả về chuỗi JSON Array duy nhất.
+        Văn bản: "${req.body.text}"`;
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
         const result = await model.generateContent(prompt);
         const textResponse = result.response.text();
-        const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+        const jsonMatch = textResponse.match(/\[[\s\S]*\]/); // Tìm dấu ngoặc vuông của Mảng
         
         if (!jsonMatch) return res.status(400).json({ error: "AI không thể định dạng cấu trúc!" });
         res.json({ du_lieu_ai: JSON.parse(jsonMatch[0]) });
     } catch (e) {
+        console.error(e);
         res.status(500).json({ error: "Xử lý giọng nói AI gặp gián đoạn!" });
     }
 });
@@ -179,15 +190,34 @@ app.post('/api/xuly-giongnoi', async (req, res) => {
 // 5. CÁC ĐƯỜNG DẪN API (ENDPOINTS) ĐỒNG BỘ TOÀN DIỆN
 app.post('/api/luu-vat-tu', async (req, res) => {
     try {
-        const phieuMoi = new VatTu(req.body);
-        await phieuMoi.save();
+        const { danh_sach_phieu, nguoi_tao } = req.body;
+        
+        if(!danh_sach_phieu || !danh_sach_phieu.length) {
+            return res.status(400).json({ error: "Không có dữ liệu để lưu" });
+        }
+
+        // Gắn thông tin người tạo và thời gian vào từng dòng
+        const duLieuSanhSang = danh_sach_phieu.map(item => ({
+            ...item,
+            nguoi_tao: nguoi_tao
+        }));
+
+        // Lưu hàng loạt (Bulk Insert) vào Database
+        await VatTu.insertMany(duLieuSanhSang);
+
+        // Ghi nhật ký tổng hợp
+        const tenCongTrinhChung = duLieuSanhSang[0].ten_cong_trinh || "hệ thống";
         await new NhatKy({
-            nguoi_thuc_hien: req.body.nguoi_tao,
-            hanh_dong: 'Nhập vật tư',
-            chi_tiet: `Ghi nhận khối lượng: ${req.body.so_luong} ${req.body.don_vi} ${req.body.ten_vat_tu} tại tòa ${req.body.ten_cong_trinh}`
+            nguoi_thuc_hien: nguoi_tao,
+            hanh_dong: 'Nhập lô vật tư',
+            chi_tiet: `Ghi nhận 1 lô gồm ${duLieuSanhSang.length} loại vật tư/hạng mục tại ${tenCongTrinhChung}`
         }).save();
+
         res.json({ status: "Thành công" });
-    } catch (e) { res.status(500).json({ error: "Lỗi lưu dữ liệu" }); }
+    } catch (e) { 
+        console.error(e);
+        res.status(500).json({ error: "Lỗi lưu dữ liệu" }); 
+    }
 });
 
 app.get('/api/vat-tu', async (req, res) => {

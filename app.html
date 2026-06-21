@@ -239,18 +239,36 @@
             </div>
 
             <div class="the-giao-dien">
-                <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom:10px;">Phiếu Vật Tư</h3>
-                <div class="luoi-nhap-lieu">
-                    <div class="nhom-nhap"><label>Ngày ghi nhận</label><input type="date" id="frmNgay" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Công trình</label><select id="frmCongTrinh" class="o-nhap"></select></div>
-                    <div class="nhom-nhap"><label>Loại vật tư</label><select id="frmVatTu" class="o-nhap"></select></div>
-                    <div class="nhom-nhap"><label>Số lượng</label><input type="number" id="frmSoLuong" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Đơn vị tính</label><input type="text" id="frmDonVi" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Ghi chú</label><input type="text" id="frmGhiChu" class="o-nhap"></div>
+                <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom:10px;">Lô Vật Tư / Hạng Mục (Nhiều mục)</h3>
+                
+                <div class="luoi-nhap-lieu" style="background:#f8fafc; padding:15px; border-radius:10px; margin-bottom:15px;">
+                    <div class="nhom-nhap"><label>Ngày ghi nhận chung</label><input type="date" id="frmNgayChung" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Công trình / Cơ sở chung</label><select id="frmCongTrinhChung" class="o-nhap"></select></div>
                 </div>
-                <button class="nut-bam" onclick="luuPhieu()" style="margin-top:20px;">LƯU VÀO HỆ THỐNG</button>
+
+                <div class="khung-cuon-bang">
+                    <table style="min-width: 800px;">
+                        <thead>
+                            <tr>
+                                <th>Loại vật tư / Tài sản</th>
+                                <th style="width: 120px;">Số lượng</th>
+                                <th style="width: 120px;">Đơn vị</th>
+                                <th>Ghi chú thêm</th>
+                                <th style="width: 60px; text-align: center;">Xóa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bangNhapLieuDong">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                    <button onclick="themDongThuCong()" style="padding:10px 15px; background:transparent; border:2px dashed var(--mau-chinh); color:var(--mau-chinh); border-radius:8px; font-weight:bold; cursor:pointer;">+ Thêm dòng thủ công</button>
+                    <button class="nut-bam" onclick="luuToanBoPhieu()" style="width: auto; padding: 10px 30px; background-color: #0288d1;">💾 XÁC NHẬN LƯU LÔ HÀNG NÀY</button>
+                </div>
             </div>
-        </div>
+
+            <datalist id="goiYVatTu"></datalist>
 
         <div id="phaneBaoCao" class="khoi-chua-tab">
             <div class="the-giao-dien">
@@ -396,15 +414,18 @@
 
     // 3. TẢI DỮ LIỆU
     async function taiDuLieuSelect() {
-        const res = await fetch('/api/danh-muc');
+        const res = await fetch('/api/danh-muc'); // Bỏ localhost nếu đang trên cloud
         const list = await res.json();
-        const selCT = document.getElementById('frmCongTrinh');
-        const selVT = document.getElementById('frmVatTu');
-        selCT.innerHTML = '<option value="">- Chọn -</option>';
-        selVT.innerHTML = '<option value="">- Chọn -</option>';
+        
+        const selCT = document.getElementById('frmCongTrinhChung');
+        const listVT = document.getElementById('goiYVatTu'); // Dùng Datalist cho linh hoạt
+        
+        selCT.innerHTML = '<option value="">- Chọn công trình -</option>';
+        listVT.innerHTML = '';
+        
         list.forEach(i => {
             if(i.loai === 'CongTrinh') selCT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
-            else selVT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
+            else listVT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
         });
     }
 
@@ -540,34 +561,89 @@
         thuAm.start(); 
     }
     thuAm.onresult = async (e) => {
-        document.getElementById('trangThaiGhiAm').innerText = 'AI ĐANG XỬ LÝ...';
+        document.getElementById('trangThaiGhiAm').innerText = 'AI ĐANG BÓC TÁCH LÔ HÀNG...';
         document.getElementById('trangThaiGhiAm').style.background = '#ff9800';
         const text = e.results[0][0].transcript;
+        
         const res = await fetch('/api/xuly-giongnoi', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text }) });
         const d = await res.json();
-        if(d.du_lieu_ai) {
-            document.getElementById('frmNgay').value = d.du_lieu_ai.ngay_nhap || '';
-            const oCT = Array.from(document.getElementById('frmCongTrinh').options).find(o => o.value === d.du_lieu_ai.ten_cong_trinh); if(oCT) document.getElementById('frmCongTrinh').value = oCT.value;
-            const oVT = Array.from(document.getElementById('frmVatTu').options).find(o => o.value === d.du_lieu_ai.ten_vat_tu); if(oVT) document.getElementById('frmVatTu').value = oVT.value;
-            document.getElementById('frmSoLuong').value = d.du_lieu_ai.so_luong || '';
-            document.getElementById('frmDonVi').value = d.du_lieu_ai.don_vi || '';
-            document.getElementById('frmGhiChu').value = d.du_lieu_ai.ghi_chu || '';
-            document.getElementById('kqAI').innerText = "Thành công! Vui lòng kiểm tra lại thông tin.";
+        
+        if(d.du_lieu_ai && Array.isArray(d.du_lieu_ai)) {
+            const mangVatTu = d.du_lieu_ai;
+            
+            // Lấy thông tin ngày & công trình của món đầu tiên làm mốc chung
+            if(mangVatTu.length > 0) {
+                document.getElementById('frmNgayChung').value = mangVatTu[0].ngay_nhap || '';
+                const oCT = Array.from(document.getElementById('frmCongTrinhChung').options).find(o => o.value === mangVatTu[0].ten_cong_trinh); 
+                if(oCT) document.getElementById('frmCongTrinhChung').value = oCT.value;
+            }
+
+            // Xóa bảng cũ và vẽ lại toàn bộ các dòng do AI bóc tách
+            document.getElementById('bangNhapLieuDong').innerHTML = '';
+            mangVatTu.forEach(monHang => {
+                themDongThuCong(monHang.ten_vat_tu, monHang.so_luong, monHang.don_vi, monHang.ghi_chu);
+            });
+
+            document.getElementById('kqAI').innerText = `Đã nhận diện thành công ${mangVatTu.length} hạng mục!`;
             document.getElementById('trangThaiGhiAm').innerText = 'HOÀN TẤT';
             document.getElementById('trangThaiGhiAm').style.background = 'var(--mau-chinh)';
         }
     };
 
-    async function luuPhieu() {
-        const data = {
-            ngay_nhap: document.getElementById('frmNgay').value, ten_cong_trinh: document.getElementById('frmCongTrinh').value,
-            ten_vat_tu: document.getElementById('frmVatTu').value, so_luong: Number(document.getElementById('frmSoLuong').value),
-            don_vi: document.getElementById('frmDonVi').value, ghi_chu: document.getElementById('frmGhiChu').value, nguoi_tao: userHienTai.tai_khoan
-        };
-        if(!data.ngay_nhap || !data.ten_cong_trinh || !data.ten_vat_tu || !data.so_luong) return alert("Điền đủ các trường bắt buộc!");
-        await fetch('/api/luu-vat-tu', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
-        alert("Lưu phiếu vật tư thành công!");
-        document.getElementById('frmSoLuong').value=''; document.getElementById('frmGhiChu').value='';
+    // Hàm thêm 1 dòng vào bảng động
+    function themDongThuCong(tenVT = '', soLuong = '', donVi = '', ghiChu = '') {
+        const tr = document.createElement('tr');
+        tr.className = 'dong-vat-tu';
+        tr.innerHTML = `
+            <td><input type="text" class="o-nhap ip-ten" list="goiYVatTu" value="${tenVT}" placeholder="Tên vật tư..."></td>
+            <td><input type="number" class="o-nhap ip-sl" value="${soLuong}"></td>
+            <td><input type="text" class="o-nhap ip-dv" value="${donVi}" placeholder="Bao, xe..."></td>
+            <td><input type="text" class="o-nhap ip-note" value="${ghiChu}" placeholder="Ghi chú..."></td>
+            <td style="text-align: center;"><button onclick="this.closest('tr').remove()" style="background:var(--mau-do); color:white; border:none; border-radius:5px; padding:8px; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:16px;">delete</span></button></td>
+        `;
+        document.getElementById('bangNhapLieuDong').appendChild(tr);
+    }
+
+    async function luuToanBoPhieu() {
+        const ngayChung = document.getElementById('frmNgayChung').value;
+        const congTrinhChung = document.getElementById('frmCongTrinhChung').value;
+        
+        if(!ngayChung || !congTrinhChung) {
+            return alert("Vui lòng chọn Ngày và Công trình chung cho lô hàng này!");
+        }
+
+        const cacDong = document.querySelectorAll('.dong-vat-tu');
+        const danhSachLuu = [];
+
+        cacDong.forEach(dong => {
+            const ten = dong.querySelector('.ip-ten').value;
+            const sl = Number(dong.querySelector('.ip-sl').value);
+            const dv = dong.querySelector('.ip-dv').value;
+            const note = dong.querySelector('.ip-note').value;
+
+            if(ten && sl) {
+                danhSachLuu.push({
+                    ngay_nhap: ngayChung,
+                    ten_cong_trinh: congTrinhChung,
+                    ten_vat_tu: ten,
+                    so_luong: sl,
+                    don_vi: dv,
+                    ghi_chu: note
+                });
+            }
+        });
+
+        if(danhSachLuu.length === 0) return alert("Chưa có hạng mục hợp lệ nào được điền (cần Tên và Số lượng)!");
+
+        // Đẩy toàn bộ mảng lên máy chủ
+        await fetch('/api/luu-vat-tu', { 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'}, 
+            body: JSON.stringify({ danh_sach_phieu: danhSachLuu, nguoi_tao: userHienTai.tai_khoan }) 
+        });
+        
+        alert(`Đã lưu thành công lô gồm ${danhSachLuu.length} hạng mục!`);
+        document.getElementById('bangNhapLieuDong').innerHTML = ''; // Xóa trắng bảng
     }
 </script>
 </body>
