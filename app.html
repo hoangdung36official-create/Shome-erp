@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Quản lý Vật tư Công trình S.HOME</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --mau-chinh: #41878a; /* Xanh lá đậm */
+            --mau-nhat: #e8f5e9; /* Xanh lá nhạt cho nền icon */
+            --mau-nen: #f0f4f2; /* Màu nền tổng thể hơi ngả xám xanh */
+            --mau-chu: #000000;
+            --mau-phu: #75857d;
+            --mau-do: #d32f2f;
+            --the-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--mau-nen); color: var(--mau-chu); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
+        
+        /* HIỆU ỨNG NỀN DECOR CHO TRANG CHÍNH */
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 35vh;
+            background: linear-gradient(135deg, #c8e6c9 0%, transparent 100%); z-index: -1;
+        }
+
+        /* --- MÀN HÌNH ĐĂNG NHẬP --- */
+        #khungDangNhap { position: fixed; inset: 0; background: #e8f5e9; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .hop-dang-nhap { background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(46, 125, 50, 0.1); text-align: center; }
+        .logo-dn { width: 60px; height: 60px; background: var(--mau-chinh); color: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px; }
+        .hop-dang-nhap input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s;}
+        .hop-dang-nhap input:focus { border-color: var(--mau-chinh); }
+        .nut-bam { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; color: white; background-color: var(--mau-chinh); }
+        
+        /* --- BỐ CỤC SIDEBAR (THANH MENU TRÁI) --- */
+        #giaoDienChinh { display: none; width: 100%; height: 100%; }
+        .thanh-ben { position: absolute; top: 0; left: 0; bottom: 0; width: 260px; background-color: white; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; z-index: 500; transition: 0.3s; }
+        
+        .khu-logo { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f0f0; }
+        .icon-cong-ty { background: var(--mau-nhat); color: var(--mau-chinh); padding: 8px; border-radius: 8px; }
+        .ten-cong-ty { font-weight: 800; font-size: 15px; line-height: 1.2; color: var(--mau-chinh); }
+        .ten-phu { font-size: 10px; font-weight: 600; color: var(--mau-phu); letter-spacing: 0.5px; }
+
+        .menu-dieu-huong { flex: 1; padding: 15px 10px; overflow-y: auto; }
+        .nut-tab { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; background: transparent; color: var(--mau-chu); border: none; text-align: left; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; }
+        .nut-tab .material-symbols-rounded { font-size: 20px; color: var(--mau-phu); }
+        .nut-tab:hover { background-color: #f5f5f5; }
+        .nut-tab.dang-hoat-dong { background-color: var(--mau-chinh); color: white; }
+        .nut-tab.dang-hoat-dong .material-symbols-rounded { color: white; }
+
+        .khu-ca-nhan { padding: 20px; border-top: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 40px; height: 40px; background: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--mau-phu);}
+        .nut-dang-xuat { margin-top: 10px; width: 100%; padding: 10px; background: transparent; border: 1px solid #ffcdd2; color: var(--mau-do); font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
+
+        /* --- NỘI DUNG CHÍNH (MAIN VIEW) --- */
+        .noi-dung-chinh { margin-left: 260px; height: 100%; overflow-y: auto; position: relative; padding: 30px; }
+        .thanh-dau-mobile { display: none; background-color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
+        .khoi-chua-tab { display: none; animation: moTab 0.3s ease; }
+        .khoi-chua-tab.kich-hoat { display: block; }
+        @keyframes moTab { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- CÁC KHỐI CHỨA (CARDS) & LƯỚI --- */
+        .the-giao-dien { background: white; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        
+        /* Lưới KPI 4 cột giống ảnh */
+        .luoi-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .the-kpi { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; }
+        .kpi-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .kpi-icon { background: var(--mau-nhat); color: var(--mau-chinh); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .kpi-title { font-weight: bold; font-size: 15px; }
+        .kpi-subtitle { font-size: 12px; color: var(--mau-phu); }
+        .kpi-so-lieu { font-size: 28px; font-weight: 800; display: flex; align-items: baseline; justify-content: space-between; }
+        .kpi-phan-tram { font-size: 14px; color: var(--mau-do); font-weight: bold; }
+
+        /* Lưới thao tác nhanh (Quick Actions) */
+        .luoi-thao-tac { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
+        .thao-tac-item { cursor: pointer; transition: 0.2s; }
+        .thao-tac-item:hover { transform: translateY(-3px); }
+        .thao-tac-icon { background: var(--mau-chinh); color: white; width: 60px; height: 60px; border-radius: 20px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2); }
+        .thao-tac-ten { font-weight: 600; font-size: 13px; }
+
+        /* Cấu trúc Form nhập liệu */
+        .luoi-nhap-lieu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .nhom-nhap { display: flex; flex-direction: column; gap: 8px; }
+        .nhom-nhap label { font-weight: 600; font-size: 13px; color: var(--mau-phu); }
+        .o-nhap { padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; background: #fafafa;}
+        .o-nhap:focus { border-color: var(--mau-chinh); background: white;}
+
+        /* Bảng biểu */
+        .khung-cuon-bang { overflow-x: auto; width: 100%; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background: #f8fafc; color: var(--mau-phu); font-weight: 600; padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        td { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; }
+        tr:hover { background-color: #fafafa; }
+
+        @media (min-width: 1200px) {
+            .luoi-kpi { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .thanh-ben { transform: translateX(-260px); }
+            .thanh-ben.mo-menu { transform: translateX(0); }
+            .noi-dung-chinh { margin-left: 0; padding: 15px; }
+            .thanh-dau-mobile { display: flex; }
+            .luoi-thao-tac { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="khungDangNhap">
+    <div class="hop-dang-nhap">
+        <div class="logo-dn"><span class="material-symbols-rounded" style="font-size: 36px;">domain</span></div>
+        <h2 style="color: var(--mau-chinh); margin-bottom: 5px;">QUẢN LÝ CÔNG TRÌNH</h2>
+        <p style="color: var(--mau-phu); margin-bottom: 25px; font-size: 13px;">Phiên bản Quản trị Cao cấp</p>
+        <input type="text" id="taiKhoanTruyCap" placeholder="Tên đăng nhập">
+        <input type="password" id="matKhauTruyCap" placeholder="Mật khẩu">
+        <button class="nut-bam" onclick="thucHienXacThuc()">ĐĂNG NHẬP</button>
+        <div id="thongBaoLoiDangNhap" style="color:var(--mau-do); margin-top:15px; font-weight:bold;"></div>
+    </div>
+</div>
+
+<div id="giaoDienChinh">
+    
+    <header class="thanh-dau-mobile">
+        <button onclick="latMenuMobile()" style="background:transparent; border:none; font-size:24px; color:var(--mau-chinh);"><span class="material-symbols-rounded">menu</span></button>
+        <span style="font-weight:bold; color:var(--mau-chinh);">S.HOME THỐNG KÊ</span>
+        <div style="width:24px;"></div>
+    </header>
+
+    <aside class="thanh-ben" id="thanhBenNav">
+        <div class="khu-logo">
+            <div class="icon-cong-ty"><span class="material-symbols-rounded">apartment</span></div>
+            <div>
+                <div class="ten-cong-ty">Quản lý Vật tư<br>S.HOME</div>
+                <div class="ten-phu">BY HOÀNG DŨNG</div>
+            </div>
+        </div>
+        <nav class="menu-dieu-huong">
+            <button class="nut-tab dang-hoat-dong" onclick="dieuHuong('phaneTongQuan', this)"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button>
+            <button class="nut-tab" onclick="dieuHuong('phaneNhapLieu', this)"><span class="material-symbols-rounded">mic</span>Nhập liệu AI</button>
+            <button class="nut-tab" onclick="dieuHuong('phaneBaoCao', this)"><span class="material-symbols-rounded">receipt_long</span>Sổ Giao dịch</button>
+            <button class="nut-tab" onclick="dieuHuong('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Cơ sở & Tòa nhà</button>
+            <button class="nut-tab" onclick="dieuHuong('phaneTaiKhoan', this)"><span class="material-symbols-rounded">group</span>Người dùng</button>
+            <button class="nut-tab" onclick="dieuHuong('phaneNhatKy', this)"><span class="material-symbols-rounded">history</span>Lịch sử hoạt động</button>
+        </nav>
+        <div class="khu-ca-nhan">
+            <div class="avatar"><span class="material-symbols-rounded">person</span></div>
+            <div style="flex:1;">
+                <div style="font-weight:bold; font-size:14px;" id="tenHienThiNguoiDung">Tài khoản</div>
+                <div style="font-size:12px; color:var(--mau-phu);" id="vaiTroHienThi">Vai trò</div>
+            </div>
+        </div>
+        <div style="padding: 0 20px 20px;">
+            <button class="nut-dang-xuat" onclick="location.reload()"><span class="material-symbols-rounded" style="font-size:18px;">logout</span> Đăng xuất</button>
+        </div>
+    </aside>
+
+    <main class="noi-dung-chinh">
+        
+        <div id="phaneTongQuan" class="khoi-chua-tab kich-hoat">
+            
+            <div class="luoi-kpi">
+                <div class="the-kpi">
+                    <div class="kpi-header">
+                        <div class="kpi-icon"><span class="material-symbols-rounded">home</span></div>
+                        <div><div class="kpi-title">Cơ Sở & Tòa Nhà</div><div class="kpi-subtitle">Toàn hệ thống</div></div>
+                    </div>
+                    <div class="kpi-so-lieu"><span id="kpiCoSo" style="font-size: 32px; color: var(--mau-chu);">0</span></div>
+                </div>
+                <div class="the-kpi">
+                    <div class="kpi-header">
+                        <div class="kpi-icon" style="color:#0288d1; background:#e1f5fe;"><span class="material-symbols-rounded">group</span></div>
+                        <div><div class="kpi-title">Nhân sự</div><div class="kpi-subtitle">Tổng tài khoản</div></div>
+                    </div>
+                    <div class="kpi-so-lieu"><span id="kpiNhanSu">0</span></div>
+                </div>
+                <div class="the-kpi">
+                    <div class="kpi-header">
+                        <div class="kpi-icon" style="color:#ed6c02; background:#fff3e0;"><span class="material-symbols-rounded">description</span></div>
+                        <div><div class="kpi-title">Phiếu xuất nhập</div><div class="kpi-subtitle">Tổng số giao dịch</div></div>
+                    </div>
+                    <div class="kpi-so-lieu"><span id="kpiGiaoDich">0</span> <span class="kpi-phan-tram" style="color:var(--mau-chinh);">Tốt</span></div>
+                </div>
+                <div class="the-kpi">
+                    <div class="kpi-header">
+                        <div class="kpi-icon" style="color:#9c27b0; background:#f3e5f5;"><span class="material-symbols-rounded">visibility_off</span></div>
+                        <div><div class="kpi-title">Tổng doanh thu</div><div class="kpi-subtitle">Toàn hệ thống</div></div>
+                    </div>
+                    <div class="kpi-so-lieu"><span style="color:var(--mau-chinh); font-size:32px;">******</span></div>
+                </div>
+            </div>
+
+            <div class="the-giao-dien">
+                <h3 style="margin-bottom: 20px;">Truy cập nhanh</h3>
+                <div class="luoi-thao-tac">
+                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[1].click()">
+                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">mic</span></div>
+                        <div class="thao-tac-ten">Nhập liệu AI</div>
+                    </div>
+                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[2].click()">
+                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">inventory_2</span></div>
+                        <div class="thao-tac-ten">Lịch sử xuất nhập</div>
+                    </div>
+                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[3].click()">
+                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">domain</span></div>
+                        <div class="thao-tac-ten">Cơ sở tòa nhà</div>
+                    </div>
+                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[4].click()">
+                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">group_add</span></div>
+                        <div class="thao-tac-ten">Thêm nhân sự</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="phaneNhapLieu" class="khoi-chua-tab">
+            <div class="the-giao-dien" style="border: 2px solid var(--mau-chinh);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align: bottom;">mic</span> Ghi Âm Đọc Lệnh</h3>
+                    <span style="background:var(--mau-do); color:white; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold; animation: blink 1.5s infinite;" id="trangThaiGhiAm">Đang chờ...</span>
+                </div>
+                <button class="nut-bam" onclick="batDauGhiAm()" style="padding:20px; font-size:18px; display:flex; align-items:center; justify-content:center; gap:10px;">BẤM ĐỂ NÓI <span class="material-symbols-rounded">graphic_eq</span></button>
+                <p id="kqAI" style="text-align:center; font-weight:bold; margin-top:15px; color:var(--mau-phu);"></p>
+            </div>
+
+            <div class="the-giao-dien">
+                <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom:10px;">Phiếu Vật Tư</h3>
+                <div class="luoi-nhap-lieu">
+                    <div class="nhom-nhap"><label>Ngày ghi nhận</label><input type="date" id="frmNgay" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Công trình</label><select id="frmCongTrinh" class="o-nhap"></select></div>
+                    <div class="nhom-nhap"><label>Loại vật tư</label><select id="frmVatTu" class="o-nhap"></select></div>
+                    <div class="nhom-nhap"><label>Số lượng</label><input type="number" id="frmSoLuong" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Đơn vị tính</label><input type="text" id="frmDonVi" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Ghi chú</label><input type="text" id="frmGhiChu" class="o-nhap"></div>
+                </div>
+                <button class="nut-bam" onclick="luuPhieu()" style="margin-top:20px;">LƯU VÀO HỆ THỐNG</button>
+            </div>
+        </div>
+
+        <div id="phaneBaoCao" class="khoi-chua-tab">
+            <div class="the-giao-dien">
+                <h3 style="margin-bottom:20px;">Sổ Nhật Ký Xuất Nhập</h3>
+                
+                <div class="luoi-nhap-lieu" style="background:#fafafa; padding:15px; border-radius:12px; margin-bottom:20px; align-items: end;">
+                    <div class="nhom-nhap">
+                        <label>🔍 Tìm kiếm</label>
+                        <input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCao()">
+                    </div>
+                    <div class="nhom-nhap">
+                        <label>🏢 Tòa nhà / Cơ sở</label>
+                        <select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCao()"><option value="ALL">- Tất cả cơ sở -</option></select>
+                    </div>
+                    <div class="nhom-nhap">
+                        <label>🧱 Loại Vật tư</label>
+                        <select id="locVatTuBC" class="o-nhap" onchange="thucThiLocBaoCao()"><option value="ALL">- Tất cả vật tư -</option></select>
+                    </div>
+                    <div class="nhom-nhap">
+                        <label>📅 Từ ngày</label>
+                        <input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCao()">
+                    </div>
+                    <div class="nhom-nhap">
+                        <label>📅 Đến ngày</label>
+                        <input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCao()">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px; padding: 12px 15px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid var(--mau-chinh); display: flex; align-items: center; justify-content: space-between;">
+                    <div style="font-weight: bold; color: var(--mau-chu); font-size: 15px;">
+                        <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 5px; color: var(--mau-chinh);">functions</span>
+                        Tổng khối lượng (Theo bộ lọc):
+                    </div>
+                    <div id="tongSoLuongLoc" style="font-size: 22px; font-weight: 900; color: var(--mau-do);">0</div>
+                </div>
+
+                <div class="khung-cuon-bang">
+                    <table id="bangVatTu">
+                        <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Khối lượng</th><th>Ghi chú</th><th>Người tạo</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="phaneCongTrinh" class="khoi-chua-tab">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+                <div class="the-giao-dien">
+                    <h3 style="margin-bottom:15px;">Danh Sách Cơ Sở</h3>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="nhapCT" class="o-nhap" style="flex:1;" placeholder="Tên cơ sở mới...">
+                        <button class="nut-bam" style="width:auto; padding:0 20px;" onclick="themDM('CongTrinh', 'nhapCT')">Thêm</button>
+                    </div>
+                    <table id="bangCT"><tbody></tbody></table>
+                </div>
+                <div class="the-giao-dien">
+                    <h3 style="margin-bottom:15px;">Danh Mục Vật Tư</h3>
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" id="nhapVT" class="o-nhap" style="flex:1;" placeholder="Loại vật tư...">
+                        <button class="nut-bam" style="width:auto; padding:0 20px;" onclick="themDM('VatTu', 'nhapVT')">Thêm</button>
+                    </div>
+                    <table id="bangVT"><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <div id="phaneTaiKhoan" class="khoi-chua-tab">
+            <div class="the-giao-dien">
+                <h3 style="margin-bottom:15px;">Danh Sách Nhân Sự</h3>
+                <div class="luoi-nhap-lieu" style="background:#fafafa; padding:15px; border-radius:10px; margin-bottom:20px;">
+                    <div class="nhom-nhap"><label>Tài khoản</label><input type="text" id="nvTK" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Mật khẩu</label><input type="text" id="nvMK" class="o-nhap"></div>
+                    <div class="nhom-nhap"><label>Vai trò</label><select id="nvVT" class="o-nhap"><option>Giám Sát</option><option>Quản Trị Viên</option></select></div>
+                    <div class="nhom-nhap" style="justify-content:flex-end;"><button class="nut-bam" onclick="taoNhanSu()">CẤP TÀI KHOẢN</button></div>
+                </div>
+                <table id="bangUser"><thead><tr><th>Tài khoản</th><th>Phân quyền</th></tr></thead><tbody></tbody></table>
+            </div>
+        </div>
+
+        <div id="phaneNhatKy" class="khoi-chua-tab">
+            <div class="the-giao-dien">
+                <h3 style="margin-bottom:15px;">Lịch sử Hoạt động</h3>
+                <div class="khung-cuon-bang">
+                    <table id="bangNK">
+                        <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Thao tác</th><th>Chi tiết</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<style>
+    @keyframes blink { 50% { opacity: 0.5; } }
+</style>
+
+<script>
+    let userHienTai = {};
+    let toanBoDuLieuVatTu = []; // Kho chứa dữ liệu để lọc siêu tốc
+
+    // 1. ĐĂNG NHẬP
+    async function thucHienXacThuc() {
+        const tai_khoan = document.getElementById('taiKhoanTruyCap').value;
+        const mat_khau = document.getElementById('matKhauTruyCap').value;
+        
+        try {
+            const res = await fetch('/api/dang-nhap', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ tai_khoan, mat_khau })
+            });
+            const data = await res.json();
+            
+            if (data.error) {
+                document.getElementById('thongBaoLoiDangNhap').innerText = data.error;
+            } else {
+                userHienTai = data;
+                document.getElementById('khungDangNhap').style.display = 'none';
+                document.getElementById('giaoDienChinh').style.display = 'block';
+                document.getElementById('tenHienThiNguoiDung').innerText = data.tai_khoan.toUpperCase();
+                document.getElementById('vaiTroHienThi').innerText = data.vai_tro;
+                
+                taiDuLieuSelect();
+                taiToanBoBang(); // Tải sẵn dữ liệu cho các bảng và KPI
+            }
+        } catch(e) { document.getElementById('thongBaoLoiDangNhap').innerText = "Mất kết nối Máy chủ!"; }
+    }
+
+    function latMenuMobile() {
+        document.getElementById('thanhBenNav').classList.toggle('mo-menu');
+    }
+
+    // 2. CHUYỂN TAB
+    function dieuHuong(idTab, nut) {
+        document.querySelectorAll('.khoi-chua-tab').forEach(t => t.classList.remove('kich-hoat'));
+        document.querySelectorAll('.nut-tab').forEach(b => b.classList.remove('dang-hoat-dong'));
+        document.getElementById(idTab).classList.add('kich-hoat');
+        nut.classList.add('dang-hoat-dong');
+        if(window.innerWidth <= 768) latMenuMobile();
+        taiToanBoBang();
+    }
+
+    // 3. TẢI DỮ LIỆU
+    async function taiDuLieuSelect() {
+        const res = await fetch('/api/danh-muc');
+        const list = await res.json();
+        const selCT = document.getElementById('frmCongTrinh');
+        const selVT = document.getElementById('frmVatTu');
+        selCT.innerHTML = '<option value="">- Chọn -</option>';
+        selVT.innerHTML = '<option value="">- Chọn -</option>';
+        list.forEach(i => {
+            if(i.loai === 'CongTrinh') selCT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
+            else selVT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
+        });
+    }
+
+    async function taiToanBoBang() {
+        // 1. Tải KPI Nhân sự
+        fetch('/api/nguoi-dung').then(r=>r.json()).then(d => {
+            document.getElementById('kpiNhanSu').innerText = d.length;
+            const tbUser = document.querySelector('#bangUser tbody'); tbUser.innerHTML='';
+            d.forEach(u => tbUser.innerHTML += `<tr><td><b>${u.tai_khoan}</b></td><td><span style="background:var(--mau-nhat); color:var(--mau-chinh); padding:4px 8px; border-radius:4px;">${u.vai_tro}</span></td></tr>`);
+        });
+
+        // 2. Tải Nhật ký Xuất nhập & Khởi tạo Bộ Lọc
+        fetch('/api/vat-tu').then(r=>r.json()).then(d => {
+            toanBoDuLieuVatTu = d; // Cất vào kho để dùng cho hàm lọc
+            document.getElementById('kpiGiaoDich').innerText = d.length;
+
+            // Tự động gom các Tên công trình & Vật tư thực tế có trong sổ để đưa vào danh sách lọc
+            const setCT = new Set(); const setVT = new Set();
+            d.forEach(i => {
+                if(i.ten_cong_trinh && i.ten_cong_trinh !== 'null') setCT.add(i.ten_cong_trinh);
+                if(i.ten_vat_tu && i.ten_vat_tu !== 'null') setVT.add(i.ten_vat_tu);
+            });
+            
+            const locCT = document.getElementById('locCongTrinhBC');
+            const locVT = document.getElementById('locVatTuBC');
+            locCT.innerHTML = '<option value="ALL">- Tất cả cơ sở -</option>';
+            locVT.innerHTML = '<option value="ALL">- Tất cả vật tư -</option>';
+            setCT.forEach(ct => locCT.innerHTML += `<option value="${ct}">${ct}</option>`);
+            setVT.forEach(vt => locVT.innerHTML += `<option value="${vt}">${vt}</option>`);
+
+            thucThiLocBaoCao(); // Gọi hàm hiển thị bảng lần đầu tiên
+        });
+
+        // 3. Tải Danh mục Cơ sở & Vật tư tiêu chuẩn
+        fetch('/api/danh-muc').then(r=>r.json()).then(d => {
+            const tongSoCoSo = d.filter(item => item.loai === 'CongTrinh').length;
+            document.getElementById('kpiCoSo').innerText = tongSoCoSo; // Update số lượng tòa nhà
+
+            const tbCT = document.querySelector('#bangCT tbody'); tbCT.innerHTML='';
+            const tbVT = document.querySelector('#bangVT tbody'); tbVT.innerHTML='';
+            d.forEach(i => {
+                const nut = `<button onclick="xoaDM('${i._id}')" style="background:none; border:none; color:var(--mau-do); font-weight:bold; cursor:pointer;">Xóa</button>`;
+                if(i.loai === 'CongTrinh') tbCT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nut}</td></tr>`;
+                else tbVT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nut}</td></tr>`;
+            });
+        });
+
+        // 4. Tải Lịch sử Hoạt động hệ thống
+        fetch('/api/nhat-ky').then(r=>r.json()).then(d => {
+            const tb = document.querySelector('#bangNK tbody'); tb.innerHTML='';
+            d.forEach(i => tb.innerHTML += `<tr><td style="font-size:12px;">${new Date(i.thoi_gian).toLocaleString('vi-VN')}</td><td><b>${i.nguoi_thuc_hien}</b></td><td><span style="background:#fff3e0; color:#ed6c02; padding:2px 6px; border-radius:4px;">${i.hanh_dong}</span></td><td>${i.chi_tiet}</td></tr>`);
+        });
+    }
+
+    // HÀM MỚI: THỰC THI LỌC DỮ LIỆU & TÍNH TỔNG SỐ LƯỢNG (Dán ngay dưới hàm taiToanBoBang)
+    function thucThiLocBaoCao() {
+        const timKiem = document.getElementById('locTimKiem').value.toLowerCase();
+        const valCT = document.getElementById('locCongTrinhBC').value;
+        const valVT = document.getElementById('locVatTuBC').value;
+        const tuNgay = document.getElementById('locTuNgay').value;
+        const denNgay = document.getElementById('locDenNgay').value;
+
+        let ketQua = toanBoDuLieuVatTu;
+
+        // Xử lý bộ lọc
+        if (timKiem) {
+            ketQua = ketQua.filter(i => 
+                (i.ten_cong_trinh && i.ten_cong_trinh.toLowerCase().includes(timKiem)) ||
+                (i.ten_vat_tu && i.ten_vat_tu.toLowerCase().includes(timKiem)) ||
+                (i.ghi_chu && i.ghi_chu.toLowerCase().includes(timKiem)) ||
+                (i.nguoi_tao && i.nguoi_tao.toLowerCase().includes(timKiem))
+            );
+        }
+        if (valCT !== "ALL") ketQua = ketQua.filter(i => i.ten_cong_trinh === valCT);
+        if (valVT !== "ALL") ketQua = ketQua.filter(i => i.ten_vat_tu === valVT);
+        if (tuNgay) ketQua = ketQua.filter(i => i.ngay_nhap >= tuNgay);
+        if (denNgay) ketQua = ketQua.filter(i => i.ngay_nhap <= denNgay);
+
+        // Hiển thị bảng và Tính tổng
+        const tb = document.querySelector('#bangVatTu tbody');
+        tb.innerHTML = '';
+        let tongKhaiBao = 0;
+
+        ketQua.forEach(i => {
+            tongKhaiBao += Number(i.so_luong) || 0; // Cộng dồn số lượng
+            
+            // Lọc các giá trị rỗng (undefined, null) thành khoảng trắng cho sạch đẹp
+            const congTrinh = (i.ten_cong_trinh === 'null' || !i.ten_cong_trinh) ? '---' : i.ten_cong_trinh;
+            const ghiChu = (i.ghi_chu === 'null' || !i.ghi_chu) ? '' : i.ghi_chu;
+            const nguoiTao = (i.nguoi_tao === 'undefined' || !i.nguoi_tao) ? 'Hệ thống' : i.nguoi_tao;
+
+            tb.innerHTML += `<tr>
+                <td>${i.ngay_nhap || '---'}</td>
+                <td><b>${congTrinh}</b></td>
+                <td>${i.ten_vat_tu || '---'}</td>
+                <td style="color:var(--mau-chinh); font-weight:bold; font-size: 15px;">${i.so_luong || 0} ${i.don_vi || ''}</td>
+                <td><i style="color: var(--mau-phu);">${ghiChu}</i></td>
+                <td><span style="background: #f0f4f2; padding: 4px 8px; border-radius: 6px; font-size:12px;">${nguoiTao}</span></td>
+            </tr>`;
+        });
+
+        // Đổ số lượng tổng ra màn hình (Có định dạng dấu phẩy hàng nghìn)
+        document.getElementById('tongSoLuongLoc').innerText = tongKhaiBao.toLocaleString('vi-VN');
+    }
+
+    // 4. CHỨC NĂNG TƯƠNG TÁC
+    async function themDM(loai, id) {
+        const ten = document.getElementById(id).value.trim();
+        if(!ten) return;
+        await fetch('/api/danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ loai, ten, nguoi_tao: userHienTai.tai_khoan }) });
+        document.getElementById(id).value = ''; taiToanBoBang(); taiDuLieuSelect();
+    }
+    async function xoaDM(id) {
+        if(!confirm('Xác nhận xóa hạng mục này?')) return;
+        await fetch('/api/xoa-danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id, nguoi_xoa: userHienTai.tai_khoan }) });
+        taiToanBoBang(); taiDuLieuSelect();
+    }
+    async function taoNhanSu() {
+        const tai_khoan = document.getElementById('nvTK').value; const mat_khau = document.getElementById('nvMK').value; const vai_tro = document.getElementById('nvVT').value;
+        if(!tai_khoan || !mat_khau) return alert('Nhập đủ tài khoản & mật khẩu');
+        const r = await fetch('/api/nguoi-dung', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan, mat_khau, vai_tro, nguoi_tao: userHienTai.tai_khoan }) });
+        if(r.ok) { alert('Thành công!'); document.getElementById('nvTK').value=''; document.getElementById('nvMK').value=''; taiToanBoBang(); }
+        else alert('Tài khoản đã tồn tại!');
+    }
+
+    // 5. GIỌNG NÓI & LƯU PHIẾU
+    const thuAm = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    thuAm.lang = 'vi-VN';
+    function batDauGhiAm() { 
+        document.getElementById('trangThaiGhiAm').innerText = 'ĐANG NGHE...'; 
+        document.getElementById('trangThaiGhiAm').style.background = '#4caf50';
+        document.getElementById('kqAI').innerText = '';
+        thuAm.start(); 
+    }
+    thuAm.onresult = async (e) => {
+        document.getElementById('trangThaiGhiAm').innerText = 'AI ĐANG XỬ LÝ...';
+        document.getElementById('trangThaiGhiAm').style.background = '#ff9800';
+        const text = e.results[0][0].transcript;
+        const res = await fetch('/api/xuly-giongnoi', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text }) });
+        const d = await res.json();
+        if(d.du_lieu_ai) {
+            document.getElementById('frmNgay').value = d.du_lieu_ai.ngay_nhap || '';
+            const oCT = Array.from(document.getElementById('frmCongTrinh').options).find(o => o.value === d.du_lieu_ai.ten_cong_trinh); if(oCT) document.getElementById('frmCongTrinh').value = oCT.value;
+            const oVT = Array.from(document.getElementById('frmVatTu').options).find(o => o.value === d.du_lieu_ai.ten_vat_tu); if(oVT) document.getElementById('frmVatTu').value = oVT.value;
+            document.getElementById('frmSoLuong').value = d.du_lieu_ai.so_luong || '';
+            document.getElementById('frmDonVi').value = d.du_lieu_ai.don_vi || '';
+            document.getElementById('frmGhiChu').value = d.du_lieu_ai.ghi_chu || '';
+            document.getElementById('kqAI').innerText = "Thành công! Vui lòng kiểm tra lại thông tin.";
+            document.getElementById('trangThaiGhiAm').innerText = 'HOÀN TẤT';
+            document.getElementById('trangThaiGhiAm').style.background = 'var(--mau-chinh)';
+        }
+    };
+
+    async function luuPhieu() {
+        const data = {
+            ngay_nhap: document.getElementById('frmNgay').value, ten_cong_trinh: document.getElementById('frmCongTrinh').value,
+            ten_vat_tu: document.getElementById('frmVatTu').value, so_luong: Number(document.getElementById('frmSoLuong').value),
+            don_vi: document.getElementById('frmDonVi').value, ghi_chu: document.getElementById('frmGhiChu').value, nguoi_tao: userHienTai.tai_khoan
+        };
+        if(!data.ngay_nhap || !data.ten_cong_trinh || !data.ten_vat_tu || !data.so_luong) return alert("Điền đủ các trường bắt buộc!");
+        await fetch('/api/luu-vat-tu', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+        alert("Lưu phiếu vật tư thành công!");
+        document.getElementById('frmSoLuong').value=''; document.getElementById('frmGhiChu').value='';
+    }
+</script>
+</body>
+</html>
