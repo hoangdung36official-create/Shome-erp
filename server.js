@@ -270,10 +270,11 @@ app.get('/api/nhat-ky', async (req, res) => res.json(await NhatKy.find().sort({ 
 
 // --- BỘ API QUẢN TRỊ NGƯỜI DÙNG NÂNG CAO ---
 
-// 1. Cấp lại mật khẩu mới
+// 1. Cấp lại mật khẩu mới (Đã tích hợp mã hóa Bcrypt)
 app.put('/api/nguoi-dung/mat-khau', async (req, res) => {
     try {
-        await NguoiDung.updateOne({ tai_khoan: req.body.tai_khoan }, { mat_khau: req.body.mat_khau_moi });
+        const matKhauMaHoa = await bcrypt.hash(req.body.mat_khau_moi, 10);
+        await TaiKhoan.updateOne({ tai_khoan: req.body.tai_khoan }, { mat_khau: matKhauMaHoa });
         await new NhatKy({ nguoi_thuc_hien: req.body.nguoi_thuc_hien, hanh_dong: 'Cấp lại Mật khẩu', chi_tiet: `Thay đổi mật khẩu cho nhân sự: ${req.body.tai_khoan}` }).save();
         res.json({ success: true });
     } catch(e) { res.status(500).json({ error: e.message }); }
@@ -282,7 +283,7 @@ app.put('/api/nguoi-dung/mat-khau', async (req, res) => {
 // 2. Thay đổi trạng thái làm việc (Khóa/Mở tài khoản)
 app.put('/api/nguoi-dung/trang-thai', async (req, res) => {
     try {
-        await NguoiDung.updateOne({ tai_khoan: req.body.tai_khoan }, { trang_thai: req.body.trang_thai });
+        await TaiKhoan.updateOne({ tai_khoan: req.body.tai_khoan }, { trang_thai: req.body.trang_thai });
         await new NhatKy({ nguoi_thuc_hien: req.body.nguoi_thuc_hien, hanh_dong: 'Đổi Trạng thái', chi_tiet: `Chuyển tài khoản ${req.body.tai_khoan} sang trạng thái: ${req.body.trang_thai}` }).save();
         res.json({ success: true });
     } catch(e) { res.status(500).json({ error: e.message }); }
@@ -291,7 +292,7 @@ app.put('/api/nguoi-dung/trang-thai', async (req, res) => {
 // 3. Xóa vĩnh viễn nhân sự
 app.delete('/api/nguoi-dung/:taikhoan', async (req, res) => {
     try {
-        await NguoiDung.deleteOne({ tai_khoan: req.params.taikhoan });
+        await TaiKhoan.deleteOne({ tai_khoan: req.params.taikhoan });
         await new NhatKy({ nguoi_thuc_hien: req.query.nguoi_thuc_hien, hanh_dong: 'Xóa Nhân sự', chi_tiet: `Xóa vĩnh viễn hệ thống tài khoản: ${req.params.taikhoan}` }).save();
         res.json({ success: true });
     } catch(e) { res.status(500).json({ error: e.message }); }
