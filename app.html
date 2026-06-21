@@ -440,9 +440,9 @@
         } catch (e) { console.error("Lỗi đồng bộ lõi:", e); }
     }
 
-    // --- 3. BỘ LỌC AN TOÀN TẬN GỐC ---
+    // --- 3. BỘ LỌC TÌM KIẾM LIVE (CẬP NHẬT TÍNH TỔNG CHI TIẾT TỪNG HẠNG MỤC) ---
     function thucThiLocBaoCaoLive() {
-        if(!duLieuVatTuGocSanhSang) return; // Bảo vệ hàm nếu mảng rỗng
+        if(!duLieuVatTuGocSanhSang) return; 
         
         const chuoiTim = document.getElementById('locTimKiem').value.toLowerCase();
         const ctChon = document.getElementById('locCongTrinhBC').value;
@@ -451,7 +451,10 @@
         const denNgay = document.getElementById('locDenNgay').value;
 
         const bodyLedger = document.querySelector('#tableVatTuLedger tbody');
-        bodyLedger.innerHTML = ''; let tongDồn = 0;
+        bodyLedger.innerHTML = ''; 
+        
+        let tongDồn = 0;
+        let khoTongHopVatTu = {}; // Bộ kho dùng để gom nhóm theo tên và đơn vị vật tư
 
         duLieuVatTuGocSanhSang.filter(item => {
             const khopTK = !chuoiTim || (item.ten_cong_trinh && item.ten_cong_trinh.toLowerCase().includes(chuoiTim)) || (item.ten_vat_tu && item.ten_vat_tu.toLowerCase().includes(chuoiTim)) || (item.ghi_chu && item.ghi_chu.toLowerCase().includes(chuoiTim));
@@ -461,7 +464,19 @@
             const khopDen = (!denNgay || item.ngay_nhap <= denNgay);
             return khopTK && khopCT && khopVT && khopTu && khopDen;
         }).forEach(item => {
-            tongDồn += (Number(item.so_luong) || 0);
+            const sLuong = Number(item.so_luong) || 0;
+            tongDồn += sLuong;
+
+            // Thuật toán gom nhóm tự động tính tổng theo Tên vật tư + Đơn vị đi kèm
+            const tenKey = (item.ten_vat_tu || 'Khác').trim();
+            const donViKey = (item.don_vi || '').trim();
+            const khoaGomNhom = `${tenKey}___${donViKey}`;
+
+            if (!khoTongHopVatTu[khoaGomNhom]) {
+                khoTongHopVatTu[khoaGomNhom] = { ten: tenKey, so_luong: 0, don_vi: donViKey };
+            }
+            khoTongHopVatTu[khoaGomNhom].so_luong += sLuong;
+
             const tenCT = (item.ten_cong_trinh === 'null' || !item.ten_cong_trinh) ? '---' : item.ten_cong_trinh;
             const gcText = (item.ghi_chu === 'null' || !item.ghi_chu) ? '' : item.ghi_chu;
             const ngTao = (item.nguoi_tao === 'undefined' || !item.nguoi_tao) ? 'Hệ thống' : item.nguoi_tao;
@@ -470,13 +485,34 @@
                 <td>${item.ngay_nhap || '---'}</td>
                 <td><b>${tenCT}</b></td>
                 <td>${item.ten_vat_tu || '---'}</td>
-                <td>${item.so_luong || 0}</td>
+                <td>${sLuong.toLocaleString('vi-VN')}</td>
                 <td>${item.don_vi || ''}</td>
                 <td><i style="color:var(--mau-phu);">${gcText}</i></td>
                 <td><span style="background:#f0f4f2; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${ngTao}</span></td>
             </tr>`;
         });
+
+        // Hiển thị tổng số gộp
         document.getElementById('tongSoLuongLoc').innerText = tongDồn.toLocaleString('vi-VN');
+
+        // Đổ dữ liệu phân loại hạng mục ra các thẻ Badge sạch sẽ
+        const khungTongHop = document.getElementById('khuVucTongHopChiTiet');
+        const noiDungTongHop = document.getElementById('noiDungTongHopChiTiet');
+        
+        if (Object.keys(khoTongHopVatTu).length > 0) {
+            khungTongHop.style.display = 'block';
+            let chuoiHtmlBadge = '';
+            for (let k in khoTongHopVatTu) {
+                const mon = khoTongHopVatTu[k];
+                chuoiHtmlBadge += `<div style="display: inline-block; background: white; border: 1px solid #ddd; padding: 6px 14px; border-radius: 6px; margin-right: 8px; margin-bottom: 8px; font-size: 13px; color: #222; font-weight: 500;">
+                    ${mon.ten}: <span style="color:var(--mau-do); font-weight:bold;">${mon.so_luong.toLocaleString('vi-VN')}</span> ${mon.don_vi}
+                </div>`;
+            }
+            noiDungTongHop.innerHTML = chuoiHtmlBadge;
+        } else {
+            khungTongHop.style.display = 'none';
+            noiDungTongHop.innerHTML = '';
+        }
     }
 
     // --- 4. GIỌNG NÓI & BẢNG ĐA MỤC ---
@@ -550,23 +586,57 @@
         if(res.ok) { alert('Cấp tài khoản thành công!'); document.getElementById('nvAcc').value=''; document.getElementById('nvPass').value=''; taiToanBoDuLieuHeThong(); } else alert('Tài khoản đã tồn tại!');
     }
 
-    // --- 6. XUẤT PDF CAO CẤP ---
+    // --- 6. XUẤT PDF KHỔ DỌC A4 CAO CẤP CHỐNG CHE/MẤT CHỮ ---
     function xuatBanBaoCaoPDFCaoCap() {
-        document.getElementById('inNgayThangXuatBan').innerText = `Ngày trích xuất: ${new Date().toLocaleString('vi-VN')}`;
+        document.getElementById('inNgayThangXuatBan').innerText = `Ngày lập báo cáo: ${new Date().toLocaleString('vi-VN')}`;
         document.getElementById('chuKyTenNguoiLap').innerText = userHienTai.tai_khoan.toUpperCase();
         
         const vungIn = document.getElementById('vungInAnBaoCaoChuyenDung');
         const header = document.getElementById('khuVucTieuDeInAn');
         const footer = document.getElementById('khuVucChuKyInAn');
-        header.style.display = 'block'; footer.style.display = 'flex';
+        const table = document.getElementById('tableVatTuLedger');
 
+        // Kích hoạt vùng in ẩn
+        header.style.display = 'block'; 
+        footer.style.display = 'flex';
+
+        // ÉP CHÂN VỊT KHUNG: Bơm Style chống tràn chữ tạm thời vào hệ thống
+        table.style.tableLayout = 'fixed';
+        table.style.width = '100%';
+        
+        const ths = table.querySelectorAll('thead th');
+        const tyLeCotDocA4 = ['13%', '23%', '17%', '12%', '10%', '17%', '8%']; // Tỷ lệ vàng chia cột vừa khít A4 dọc
+        ths.forEach((th, i) => { th.style.width = tyLeCotDocA4[i]; });
+
+        const styleTạmThoi = document.createElement('style');
+        styleTạmThoi.innerHTML = `
+            #tableVatTuLedger td, #tableVatTuLedger th { 
+                white-space: normal !important; 
+                word-break: break-word !important; 
+                overflow-wrap: break-word !important; 
+                font-size: 11px !important; 
+                padding: 8px 4px !important; 
+            }
+            #khuVucTongHopChiTiet, #khuVucChuKyInAn { page-break-inside: avoid !important; }
+        `;
+        document.head.appendChild(styleTạmThoi);
+
+        // Khởi chạy trình xuất cấu hình khổ dọc Portrait A4 chuẩn quốc tế
         html2pdf().set({
-            margin: 12, filename: `BaoCao_VatTu_${new Date().getTime()}.pdf`,
+            margin: [15, 12, 15, 12], // Cách lề trên - trái - dưới - phải cân đối
+            filename: `BaoCao_29LAND_Doc_${new Date().getTime()}.pdf`,
             image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { scale: 2.5, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            html2canvas: { scale: 2.5, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, // Chuyển sang khổ dọc chuẩn xác
+            pagebreak: { mode: ['css', 'legacy'] } // Ngắt trang thông minh, không cắt đôi dòng chữ
         }).from(vungIn).toPdf().get('pdf').then(() => {
-            header.style.display = 'none'; footer.style.display = 'none';
+            // Hoàn tất: Dọn dẹp cấu hình tạm thời để trả lại giao diện gốc sạch sẽ cho màn hình
+            header.style.display = 'none'; 
+            footer.style.display = 'none';
+            table.style.tableLayout = 'auto';
+            table.style.width = '100%';
+            ths.forEach(th => { th.style.width = 'auto'; });
+            styleTạmThoi.remove();
         }).save();
     }
 
