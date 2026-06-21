@@ -3,356 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Quản lý & Vận hành 29LAND</title>
+    <title>Hệ Thống Quản Lý & Vận Hành 29LAND</title>
     
-    <!-- Cấu hình PWA -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2e7d32">
     <link rel="apple-touch-icon" href="/logo-192.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+    
     <style>
-        :root {
-            --mau-chinh: #2e7d32;
-            --mau-nhat: #e8f5e9;
-            --mau-nen: #f0f4f2;
-            --mau-chu: #1c2b23;
-            --mau-phu: #75857d;
-            --mau-do: #d32f2f;
-        }
-
+        /* COLOR THEME 29LAND */
+        :root { --mau-chinh: #2e7d32; --mau-nhat: #e8f5e9; --mau-nen: #f0f4f2; --mau-chu: #1c2b23; --mau-phu: #75857d; --mau-do: #d32f2f; --mau-xanh-bien: #0288d1; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
-        body { background-color: var(--mau-nen); color: var(--mau-chu); display: flex; height: 100vh; overflow: hidden; font-size: 14px; }
-        
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 35vh;
-            background: linear-gradient(135deg, #c8e6c9 0%, transparent 100%); z-index: -1;
-        }
+        body { background-color: var(--mau-nen); color: var(--mau-chu); display: block; height: 100vh; overflow: hidden; font-size: 14px; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 35vh; background: linear-gradient(135deg, #c8e6c9 0%, transparent 100%); z-index: -1; }
 
-        /* --- MÀN HÌNH ĐĂNG NHẬP --- */
+        /* AUTH SCREEN */
         #khungDangNhap { position: fixed; inset: 0; background: #e8f5e9; display: flex; align-items: center; justify-content: center; z-index: 9999; }
         .hop-dang-nhap { background: white; padding: 40px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(46, 125, 50, 0.1); text-align: center; }
-        .logo-dn { width: 60px; height: 60px; background: var(--mau-chinh); color: white; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 20px; }
-        .hop-dang-nhap input { width: 100%; padding: 14px; margin-bottom: 15px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 15px; outline: none; transition: 0.3s;}
-        .hop-dang-nhap input:focus { border-color: var(--mau-chinh); }
-        .nut-bam { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; color: white; background-color: var(--mau-chinh); }
+        .logo-he-thong { width: 60px; height: 60px; background: var(--mau-chinh); color: white; border-radius: 15px; display: block; margin: 0 auto 20px; text-align: center; line-height: 60px; }
         
-        /* --- BỐ CỤC SIDEBAR 29LAND CHUẨN --- */
-        #giaoDienChinh { display: none; width: 100%; height: 100%; }
-        .thanh-ben { position: absolute; top: 0; left: 0; bottom: 0; width: 260px; background-color: white; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; z-index: 500; transition: 0.3s; }
+        /* FORMS & BUTTONS */
+        .o-nhap { display: block; width: 100%; padding: 12px 14px; margin-bottom: 15px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 14px; outline: none; background-color: #fafafa; transition: 0.2s; }
+        .o-nhap:focus { border-color: var(--mau-chinh); background-color: white; }
+        .nut-bam-chinh { display: block; width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; color: white; background-color: var(--mau-chinh); text-align: center; transition: opacity 0.2s; }
+        .nut-bam-chinh:active { opacity: 0.9; }
+
+        /* APP LAYOUT */
+        #giaoDienChinh { display: none; width: 100%; height: 100%; position: relative; }
+        .thanh-menu-ben { position: absolute; top: 0; left: 0; bottom: 0; width: 260px; background-color: white; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; z-index: 500; transition: transform 0.3s ease; }
         
-        .khu-logo { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f0f0f0; }
-        .icon-cong-ty { background: var(--mau-nhat); color: var(--mau-chinh); padding: 8px; border-radius: 8px; }
-        .ten-cong-ty { font-weight: 800; font-size: 15px; line-height: 1.2; color: var(--mau-chinh); }
-        .ten-phu { font-size: 10px; font-weight: 600; color: var(--mau-phu); letter-spacing: 0.5px; text-transform: uppercase;}
+        .khu-vuc-logo { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid #f0f0f0; }
+        .logo-khung-chua { display: block; background: var(--mau-nhat); color: var(--mau-chinh); padding: 8px; border-radius: 8px; margin-right: 12px; }
+        .chu-logo-title { font-weight: 800; font-size: 15px; color: var(--mau-chinh); }
 
-        .menu-dieu-huong { flex: 1; padding: 15px 10px; overflow-y: auto; }
-        .nut-tab { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; background: transparent; color: var(--mau-chu); border: none; text-align: left; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; }
-        .nut-tab .material-symbols-rounded { font-size: 20px; color: var(--mau-phu); }
-        .nut-tab:hover { background-color: #f5f5f5; }
-        .nut-tab.dang-hoat-dong { background-color: var(--mau-chinh); color: white; }
-        .nut-tab.dang-hoat-dong .material-symbols-rounded { color: white; }
+        .danh-sach-tab { flex: 1; padding: 15px 10px; overflow-y: auto; }
+        .nut-chuyen-tab { display: flex; align-items: center; width: 100%; padding: 12px 15px; background: transparent; color: var(--mau-chu); border: none; text-align: left; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 10px; margin-bottom: 5px; transition: 0.2s; }
+        .nut-chuyen-tab .material-symbols-rounded { font-size: 20px; color: var(--mau-phu); margin-right: 12px; }
+        .nut-chuyen-tab:hover { background-color: #f5f5f5; }
+        .nut-chuyen-tab.dang-hoat-dong { background-color: var(--mau-chinh); color: white; }
+        .nut-chuyen-tab.dang-hoat-dong .material-symbols-rounded { color: white; }
 
-        .khu-ca-nhan { padding: 20px; border-top: 1px solid #f0f0f0; display: flex; align-items: center; gap: 12px; }
-        .avatar { width: 40px; height: 40px; background: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--mau-phu);}
-        .nut-dang-xuat { margin-top: 10px; width: 100%; padding: 10px; background: transparent; border: 1px solid #ffcdd2; color: var(--mau-do); font-weight: 600; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;}
-
-        /* --- NỘI DUNG CHÍNH --- */
-        .noi-dung-chinh { margin-left: 260px; height: 100%; overflow-y: auto; position: relative; padding: 30px; }
-        .thanh-dau-mobile { display: none; background-color: white; padding: 15px 20px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; box-shadow: 0 1px 3px rgba(0,0,0,0.05);}
-        .khoi-chua-tab { display: none; animation: moTab 0.3s ease; }
-        .khoi-chua-tab.kich-hoat { display: block; }
-        @keyframes moTab { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- CARDS & GRIDS --- */
-        .the-giao-dien { background: white; border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .khu-vuc-tai-khoan { padding: 20px; border-top: 1px solid #f0f0f0; background-color: white; }
+        .khung-noi-dung { margin-left: 260px; height: 100%; overflow-y: auto; padding: 30px; }
         
-        .luoi-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
-        .the-kpi { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; }
-        .kpi-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
-        .kpi-icon { background: var(--mau-nhat); color: var(--mau-chinh); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-        .kpi-title { font-weight: bold; font-size: 15px; }
-        .kpi-subtitle { font-size: 12px; color: var(--mau-phu); }
-        .kpi-so-lieu { font-size: 28px; font-weight: 800; display: flex; align-items: baseline; justify-content: space-between; }
-        
-        .luoi-thao-tac { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
-        .thao-tac-item { cursor: pointer; transition: 0.2s; }
-        .thao-tac-item:hover { transform: translateY(-3px); }
-        .thao-tac-icon { background: var(--mau-chinh); color: white; width: 60px; height: 60px; border-radius: 20px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2); }
-        .thao-tac-ten { font-weight: 600; font-size: 13px; }
+        .thanh-dau-mobile { display: none; background-color: white; padding: 15px 20px; border-bottom: 1px solid #e0e0e0; align-items: center; justify-content: space-between; }
+        .khoi-tab-noi-dung { display: none; animation: hieuUngMoTab 0.3s ease; }
+        .khoi-tab-noi-dung.hien-thi-kich-hoat { display: block; }
+        @keyframes hieuUngMoTab { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .luoi-nhap-lieu { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .nhom-nhap { display: flex; flex-direction: column; gap: 8px; }
-        .nhom-nhap label { font-weight: 600; font-size: 13px; color: var(--mau-phu); }
-        .o-nhap { padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; background: #fafafa;}
-        .o-nhap:focus { border-color: var(--mau-chinh); background: white;}
+        /* CARDS & GRIDS */
+        .the-trang-tin { background: white; border-radius: 16px; padding: 24px; margin-bottom: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+        .khung-chua-dong { display: block; font-size: 0; margin: 0 -10px; }
+        .cot-hai { display: inline-block; font-size: 14px; vertical-align: top; width: 50%; padding: 0 10px; }
+        .cot-ba { display: inline-block; font-size: 14px; vertical-align: top; width: 33.333%; padding: 0 10px; }
+        .cot-bon { display: inline-block; font-size: 14px; vertical-align: top; width: 25%; padding: 0 10px; }
 
-        .khung-cuon-bang { overflow-x: auto; width: 100%; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #f8fafc; color: var(--mau-phu); font-weight: 600; padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        td { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; }
-        tr:hover { background-color: #fafafa; }
+        .the-kpi-vuong { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; display: flex; flex-direction: column; justify-content: space-between;}
+        .kpi-header { display: flex; align-items: center; margin-bottom: 15px; }
+        .kpi-icon { background: var(--mau-nhat); color: var(--mau-chinh); width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px; }
+        .so-lieu-kpi { font-size: 28px; font-weight: 800; color: var(--mau-chu); }
+
+        /* QUICK ACTIONS */
+        .muc-truy-cap { cursor: pointer; transition: 0.2s; text-align: center; }
+        .muc-truy-cap:hover { transform: translateY(-3px); }
+        .icon-truy-cap { background: var(--mau-chinh); color: white; width: 60px; height: 60px; border-radius: 20px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(46,125,50,0.2); font-size: 28px; }
+
+        /* TABLES */
+        .vung-cuon-bang { width: 100%; overflow-x: auto; margin-top: 15px; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { background-color: #f8fafc; color: var(--mau-phu); font-weight: 600; padding: 14px; text-align: left; border-bottom: 1.5px solid #e0e0e0; }
+        td { padding: 14px; border-bottom: 1px solid #f0f0f0; color: var(--mau-chu); }
+        tr:hover { background-color: #fcfcfc; }
         
-        /* BẢN IN PDF */
         .dau-trang-in-an { display: none; padding-bottom: 20px; border-bottom: 2px solid #000; margin-bottom: 25px; }
 
-        @media (min-width: 1200px) { .luoi-kpi { grid-template-columns: repeat(4, 1fr); } }
         @media (max-width: 768px) {
-            .thanh-ben { transform: translateX(-260px); }
-            .thanh-ben.mo-menu { transform: translateX(0); }
-            .noi-dung-chinh { margin-left: 0; padding: 15px; }
+            .thanh-menu-ben { transform: translateX(-260px); }
+            .thanh-menu-ben.mo-rong-menu { transform: translateX(0); }
+            .khung-noi-dung { margin-left: 0; padding: 15px; }
             .thanh-dau-mobile { display: flex; }
-            .luoi-thao-tac { grid-template-columns: repeat(3, 1fr); }
+            .cot-hai, .cot-ba, .cot-bon { width: 100% !important; display: block; margin-bottom: 15px; }
         }
     </style>
 </head>
 <body>
 
-<!-- MÀN HÌNH ĐĂNG NHẬP -->
 <div id="khungDangNhap">
     <div class="hop-dang-nhap">
-        <div class="logo-dn"><span class="material-symbols-rounded" style="font-size: 36px;">domain</span></div>
+        <div class="logo-he-thong"><span class="material-symbols-rounded" style="font-size: 36px; vertical-align: middle;">domain</span></div>
         <h2 style="color: var(--mau-chinh); margin-bottom: 5px;">HỆ THỐNG VẬN HÀNH</h2>
-        <p style="color: var(--mau-phu); margin-bottom: 25px; font-size: 13px;">Phiên bản Quản trị Cao cấp</p>
-        <input type="text" id="taiKhoanTruyCap" placeholder="Tên đăng nhập">
-        <input type="password" id="matKhauTruyCap" placeholder="Mật khẩu">
-        <button class="nut-bam" onclick="thucHienXacThuc()">ĐĂNG NHẬP</button>
+        <p style="color: var(--mau-phu); margin-bottom: 25px; font-size: 12px; font-weight: 600;">QUẢN LÝ VẬT TƯ 29LAND</p>
+        <input type="text" id="taiKhoanTruyCap" class="o-nhap" placeholder="Tên tài khoản quản trị">
+        <input type="password" id="matKhauTruyCap" class="o-nhap" placeholder="Mật khẩu truy cập">
+        <button class="nut-bam-chinh" onclick="thucHienXacThuc()">ĐĂNG NHẬP HỆ THỐNG</button>
         <div id="thongBaoLoiDangNhap" style="color:var(--mau-do); margin-top:15px; font-weight:bold;"></div>
     </div>
 </div>
 
-<!-- GIAO DIỆN CHÍNH -->
 <div id="giaoDienChinh">
-    
     <header class="thanh-dau-mobile">
-        <button onclick="latMenuMobile()" style="background:transparent; border:none; font-size:24px; color:var(--mau-chinh);"><span class="material-symbols-rounded">menu</span></button>
-        <span style="font-weight:bold; color:var(--mau-chinh);">29LAND DASHBOARD</span>
-        <div style="width:24px;"></div>
+        <button onclick="latThanhMenuMobile()" style="background:transparent; border:none; color:var(--mau-chinh); cursor:pointer;"><span class="material-symbols-rounded" style="font-size:26px;">menu</span></button>
+        <span style="font-weight:bold; color:var(--mau-chinh); font-size: 16px;">29LAND DASHBOARD</span>
+        <div style="width:26px;"></div>
     </header>
 
-    <aside class="thanh-ben" id="thanhBenNav">
-        <div class="khu-logo">
-            <div class="icon-cong-ty"><span class="material-symbols-rounded">apartment</span></div>
-            <div>
-                <div class="ten-cong-ty">Quản lý & Vận hành<br>29LAND</div>
-                <div class="ten-phu">BY HOÀNG DŨNG</div>
-            </div>
+    <aside class="thanh-menu-ben" id="thanhBenNav">
+        <div class="khu-vuc-logo">
+            <div class="logo-khung-chua"><span class="material-symbols-rounded" style="vertical-align: middle;">apartment</span></div>
+            <div class="chu-logo-title">Quản lý & Vận hành<br><span style="font-size:10px; color:var(--mau-phu); text-transform:uppercase;">29LAND BY HOÀNG DŨNG</span></div>
         </div>
-        <nav class="menu-dieu-huong">
-            <button class="nut-tab dang-hoat-dong" onclick="dieuHuong('phaneTongQuan', this)"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button>
-            <button class="nut-tab" onclick="dieuHuong('phaneNhapLieu', this)"><span class="material-symbols-rounded">mic</span>Nhập liệu đa mục</button>
-            <button class="nut-tab" onclick="dieuHuong('phaneBaoCao', this)"><span class="material-symbols-rounded">receipt_long</span>Sổ Giao dịch</button>
-            <button class="nut-tab" onclick="dieuHuong('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Cơ sở & Tòa nhà</button>
-            <button class="nut-tab" onclick="dieuHuong('phaneTaiKhoan', this)"><span class="material-symbols-rounded">group</span>Người dùng</button>
-            <button class="nut-tab" onclick="dieuHuong('phaneNhatKy', this)"><span class="material-symbols-rounded">history</span>Lịch sử hoạt động</button>
+        <nav class="danh-sach-tab">
+            <button id="btnMenuTongQuan" class="nut-chuyen-tab dang-hoat-dong" onclick="chuyenPhanHe('phaneTongQuan', this)"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button>
+            <button id="btnMenuNhapLieu" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneNhapLieu', this)"><span class="material-symbols-rounded">mic</span>Nhập liệu AI</button>
+            <button id="btnMenuBaoCao" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneBaoCao', this)"><span class="material-symbols-rounded">receipt_long</span>Sổ Giao dịch</button>
+            <button id="btnMenuCongTrinh" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Cơ sở & Tòa nhà</button>
+            
+            <div id="vungDànhChoQuanTri" style="display:none; border-top: 1px solid #f0f0f0; margin-top: 15px; padding-top: 15px;">
+                <p style="font-size:11px; color:var(--mau-phu); font-weight:600; margin-bottom:10px; padding-left:15px; text-transform:uppercase;">Cấu Hình Hệ Thống</p>
+                <button id="btnMenuTaiKhoan" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneTaiKhoan', this)"><span class="material-symbols-rounded">group</span>Người dùng</button>
+                <button id="btnMenuNhatKy" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneNhatKy', this)"><span class="material-symbols-rounded">history</span>Lịch sử hệ thống</button>
+            </div>
         </nav>
-        <div class="khu-ca-nhan">
-            <div class="avatar"><span class="material-symbols-rounded">person</span></div>
-            <div style="flex:1;">
-                <div style="font-weight:bold; font-size:14px;" id="tenHienThiNguoiDung">Tài khoản</div>
-                <div style="font-size:12px; color:var(--mau-phu);" id="vaiTroHienThi">Vai trò</div>
+        <div class="khu-vuc-tai-khoan">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; background: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--mau-phu);"><span class="material-symbols-rounded">person</span></div>
+                <div>
+                    <div style="font-weight:bold; font-size:14px;" id="tenHienThiNguoiDung">---</div>
+                    <div style="font-size:11px; color:var(--mau-phu);" id="vaiTroHienThi">---</div>
+                </div>
             </div>
-        </div>
-        <div style="padding: 0 20px 20px;">
-            <button class="nut-dang-xuat" onclick="location.reload()"><span class="material-symbols-rounded" style="font-size:18px;">logout</span> Đăng xuất</button>
+            <button onclick="location.reload()" class="nut-bam-chinh" style="margin-top: 15px; background:transparent; border:1px solid #ffcdd2; color:var(--mau-do); padding:10px;"><span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle; margin-right:5px;">logout</span>Đăng xuất</button>
         </div>
     </aside>
 
-    <main class="noi-dung-chinh">
+    <main class="khung-noi-dung">
         
-        <!-- PHÂN HỆ 1: TỔNG QUAN (DASHBOARD) -->
-        <div id="phaneTongQuan" class="khoi-chua-tab kich-hoat">
-            <div class="luoi-kpi">
-                <div class="the-kpi">
-                    <div class="kpi-header">
-                        <div class="kpi-icon"><span class="material-symbols-rounded">home</span></div>
-                        <div><div class="kpi-title">Cơ Sở & Tòa Nhà</div><div class="kpi-subtitle">Toàn hệ thống</div></div>
+        <div id="phaneTongQuan" class="khoi-tab-noi-dung hien-thi-kich-hoat">
+            <div class="khung-chua-dong">
+                <div class="cot-bon">
+                    <div class="the-kpi-vuong">
+                        <div class="kpi-header"><div class="kpi-icon"><span class="material-symbols-rounded">home</span></div><div><p style="font-weight:bold;">Cơ Sở</p><p style="font-size:11px; color:var(--mau-phu);">Toàn hệ thống</p></div></div>
+                        <div class="so-lieu-kpi" id="kpiCoSo">0</div>
                     </div>
-                    <div class="kpi-so-lieu"><span id="kpiCoSo">0</span></div>
                 </div>
-                <div class="the-kpi">
-                    <div class="kpi-header">
-                        <div class="kpi-icon" style="color:#0288d1; background:#e1f5fe;"><span class="material-symbols-rounded">group</span></div>
-                        <div><div class="kpi-title">Nhân sự</div><div class="kpi-subtitle">Tài khoản hoạt động</div></div>
+                <div class="cot-bon">
+                    <div class="the-kpi-vuong">
+                        <div class="kpi-header"><div class="kpi-icon" style="background:#e1f5fe; color:#0288d1;"><span class="material-symbols-rounded">description</span></div><div><p style="font-weight:bold;">Giao Dịch</p><p style="font-size:11px; color:var(--mau-phu);">Tổng số phiếu</p></div></div>
+                        <div class="so-lieu-kpi" id="kpiGiaoDich">0</div>
                     </div>
-                    <div class="kpi-so-lieu"><span id="kpiNhanSu">0</span></div>
                 </div>
-                <div class="the-kpi">
-                    <div class="kpi-header">
-                        <div class="kpi-icon" style="color:#ed6c02; background:#fff3e0;"><span class="material-symbols-rounded">description</span></div>
-                        <div><div class="kpi-title">Phiếu giao dịch</div><div class="kpi-subtitle">Lô hàng xuất nhập</div></div>
+                <div class="cot-bon">
+                    <div class="the-kpi-vuong">
+                        <div class="kpi-header"><div class="kpi-icon" style="background:#fff3e0; color:#ed6c02;"><span class="material-symbols-rounded">group</span></div><div><p style="font-weight:bold;">Nhân Sự</p><p style="font-size:11px; color:var(--mau-phu);">Tài khoản nội bộ</p></div></div>
+                        <div class="so-lieu-kpi" id="kpiNhanSu">0</div>
                     </div>
-                    <div class="kpi-so-lieu"><span id="kpiGiaoDich">0</span></div>
                 </div>
-                <div class="the-kpi">
-                    <div class="kpi-header">
-                        <div class="kpi-icon" style="color:#9c27b0; background:#f3e5f5;"><span class="material-symbols-rounded">visibility_off</span></div>
-                        <div><div class="kpi-title">Tổng doanh thu</div><div class="kpi-subtitle">Toàn hệ thống</div></div>
+                <div class="cot-bon">
+                    <div class="the-kpi-vuong">
+                        <div class="kpi-header"><div class="kpi-icon" style="background:#f3e5f5; color:#9c27b0;"><span class="material-symbols-rounded">visibility_off</span></div><div><p style="font-weight:bold;">Doanh Thu</p><p style="font-size:11px; color:var(--mau-phu);">Bảo mật</p></div></div>
+                        <div class="so-lieu-kpi" style="color:var(--mau-chinh);">******</div>
                     </div>
-                    <div class="kpi-so-lieu"><span style="color:var(--mau-chinh); font-size:32px;">******</span></div>
                 </div>
             </div>
 
-            <div class="the-giao-dien">
+            <div class="the-trang-tin">
                 <h3 style="margin-bottom: 20px;">Truy cập nhanh</h3>
-                <div class="luoi-thao-tac">
-                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[1].click()">
-                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">mic</span></div>
-                        <div class="thao-tac-ten">Nhập liệu đa mục</div>
-                    </div>
-                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[2].click()">
-                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">inventory_2</span></div>
-                        <div class="thao-tac-ten">Lịch sử giao dịch</div>
-                    </div>
-                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[3].click()">
-                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">domain</span></div>
-                        <div class="thao-tac-ten">Cơ sở tòa nhà</div>
-                    </div>
-                    <div class="thao-tac-item" onclick="document.querySelectorAll('.nut-tab')[4].click()">
-                        <div class="thao-tac-icon"><span class="material-symbols-rounded" style="font-size:28px;">group_add</span></div>
-                        <div class="thao-tac-ten">Quản lý nhân sự</div>
-                    </div>
+                <div class="khung-chua-dong">
+                    <div class="cot-bon muc-truy-cap" onclick="document.getElementById('btnMenuNhapLieu').click()"><div class="icon-truy-cap"><span class="material-symbols-rounded">mic</span></div><p style="font-weight:600; font-size:13px;">Nhập liệu AI</p></div>
+                    <div class="cot-bon muc-truy-cap" onclick="document.getElementById('btnMenuBaoCao').click()"><div class="icon-truy-cap"><span class="material-symbols-rounded">inventory_2</span></div><p style="font-weight:600; font-size:13px;">Sổ giao dịch</p></div>
+                    <div class="cot-bon muc-truy-cap" onclick="document.getElementById('btnMenuCongTrinh').click()"><div class="icon-truy-cap"><span class="material-symbols-rounded">domain</span></div><p style="font-weight:600; font-size:13px;">Cơ sở & Vật tư</p></div>
+                    <div class="cot-bon muc-truy-cap" onclick="document.getElementById('btnMenuTaiKhoan').click()"><div class="icon-truy-cap"><span class="material-symbols-rounded">group_add</span></div><p style="font-weight:600; font-size:13px;">Thêm nhân sự</p></div>
                 </div>
             </div>
         </div>
 
-        <!-- PHÂN HỆ 2: NHẬP LIỆU AI ĐA MỤC -->
-        <div id="phaneNhapLieu" class="khoi-chua-tab">
-            <div class="the-giao-dien" style="border: 2px solid var(--mau-chinh);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align: bottom;">mic</span> Ghi Âm Đọc Lệnh Bàn Giao</h3>
-                    <span style="background:var(--mau-do); color:white; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;" id="trangThaiGhiAm">Đang chờ...</span>
+        <div id="phaneNhapLieu" class="khoi-tab-noi-dung">
+            <div class="the-trang-tin" style="border: 2px solid var(--mau-chinh);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">mic</span>Ghi Âm Đọc Lệnh Bàn Giao</h3>
+                    <span id="trangThaiGhiAm" style="background:var(--mau-do); color:white; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;">Sẵn sàng</span>
                 </div>
-                <button class="nut-bam" onclick="batDauGhiAm()" style="padding:20px; font-size:18px; display:flex; align-items:center; justify-content:center; gap:10px;">BẤM ĐỂ NÓI <span class="material-symbols-rounded">graphic_eq</span></button>
+                <button class="nut-bam-chinh" onclick="kichHoatThuAmGiongNoi()" style="padding:18px; font-size:16px; display:flex; align-items:center; justify-content:center;"><span class="material-symbols-rounded" style="margin-right:8px;">graphic_eq</span> BẤM ĐỂ NÓI LỆNH</button>
             </div>
 
-            <div class="the-giao-dien">
-                <h3 style="margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom:10px;">Chi tiết lô hàng phân tích</h3>
-                <div class="luoi-nhap-lieu" style="background:#fafafa; padding:15px; border-radius:10px; margin-bottom:15px;">
-                    <div class="nhom-nhap"><label>Ngày ghi nhận chung</label><input type="date" id="frmNgayChung" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Cơ sở / Tòa nhà chung</label><select id="frmCongTrinhChung" class="o-nhap"></select></div>
+            <div class="the-trang-tin">
+                <h3 style="margin-bottom:15px; border-bottom:1px solid #f0f0f0; padding-bottom:10px;">Chi tiết lô hàng phân tích</h3>
+                <div class="khung-chua-dong" style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px;">
+                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);">Ngày ghi nhận chung</label><input type="date" id="frmNgayChung" class="o-nhap" style="margin-bottom:0;"></div>
+                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);">Cơ sở / Tòa nhà chung</label><select id="frmCongTrinhChung" class="o-nhap" style="margin-bottom:0;"></select></div>
                 </div>
-                <div class="khung-cuon-bang">
-                    <table style="min-width: 800px;">
-                        <thead>
-                            <tr>
-                                <th>Loại vật tư / Tài sản</th>
-                                <th style="width: 120px;">Số lượng</th>
-                                <th style="width: 120px;">Đơn vị</th>
-                                <th>Ghi chú thêm</th>
-                                <th style="width: 60px; text-align: center;">Xóa</th>
-                            </tr>
-                        </thead>
+                <div class="vung-cuon-bang">
+                    <table>
+                        <thead><tr><th>Loại vật tư / Tài sản</th><th style="width:120px;">Số lượng</th><th style="width:120px;">Đơn vị</th><th>Ghi chú diễn giải</th><th style="width:60px; text-align:center;">Xóa</th></tr></thead>
                         <tbody id="bangNhapLieuDong"></tbody>
                     </table>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                    <button onclick="boSungDongThuCong()" style="padding:10px 15px; background:transparent; border:2px dashed var(--mau-chinh); color:var(--mau-chinh); border-radius:8px; font-weight:bold; cursor:pointer;">+ Thêm dòng thủ công</button>
-                    <button class="nut-bam" onclick="dayMangPhieuLenDatabase()" style="width: auto; padding: 10px 30px; background-color: #0288d1;">💾 XÁC NHẬN LƯU LÔ HÀNG</button>
+                <div class="khung-chua-dong" style="margin-top:20px;">
+                    <div class="cot-hai"><button onclick="boSungDongThuCong()" style="padding:12px 15px; background:transparent; border:2px dashed var(--mau-chinh); color:var(--mau-chinh); border-radius:10px; font-weight:bold; cursor:pointer;">+ Thêm dòng thủ công</button></div>
+                    <div class="cot-hai" style="text-align:right;"><button class="nut-bam-chinh" onclick="dayMangPhieuLenDatabase()" style="width:auto; padding:12px 30px; background-color:var(--mau-xanh-bien); display:inline-block;">💾 LƯU LÔ HÀNG NÀY</button></div>
                 </div>
             </div>
             <datalist id="goiYVatTuHeThong"></datalist>
         </div>
 
-        <!-- PHÂN HỆ 3: BÁO CÁO THỐNG KÊ PDF -->
-        <div id="phaneBaoCao" class="khoi-chua-tab">
-            <div class="the-giao-dien" data-html2canvas-ignore="true">
-                <h3 style="margin-bottom:15px;">Bộ lọc Sổ Nhật Ký</h3>
-                <div class="luoi-nhap-lieu" style="background:#fafafa; padding:15px; border-radius:12px;">
-                    <div class="nhom-nhap"><label>🔍 Tìm kiếm tự do</label><input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCaoLive()"></div>
-                    <div class="nhom-nhap"><label>🏢 Cơ sở / Tòa nhà</label><select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
-                    <div class="nhom-nhap"><label>🧱 Loại Vật tư</label><select id="locVatTuBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
-                    <div class="nhom-nhap"><label>📅 Từ ngày</label><input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
-                    <div class="nhom-nhap"><label>📅 Đến ngày</label><input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
+        <div id="phaneBaoCao" class="khoi-tab-noi-dung">
+            <div class="the-trang-tin" data-html2canvas-ignore="true">
+                <h3 style="margin-bottom:15px;">Bộ Lọc Sổ Nhật Ký</h3>
+                <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px;">
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🔍 Tìm kiếm tự do</label><input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCaoLive()"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🏢 Cơ sở</label><select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🧱 Hạng mục</label><select id="locVatTuBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
+                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">📅 Từ ngày</label><input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
+                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">📅 Đến ngày</label><input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
                 </div>
             </div>
 
-            <div class="the-giao-dien" id="vungInAnBaoCaoChuyenDung">
-                <!-- Tiêu đề in -->
+            <div class="the-trang-tin" id="vungInAnBaoCaoChuyenDung">
                 <div class="dau-trang-in-an" id="khuVucTieuDeInAn">
                     <p style="font-size:12px; font-weight:bold;">HỆ THỐNG QUẢN LÝ VẬN HÀNH 29LAND</p>
                     <p style="font-size:11px; color:#555;">Mã biểu mẫu: BM-VT-2026</p>
                     <div style="text-align:center; margin-top:20px;">
-                        <h2 style="font-size:20px; font-weight:bold; color:#000;">BÁO CÁO CHỈ SỐ BIẾN ĐỘNG VẬT TƯ</h2>
-                        <p style="font-size:12px; italic; margin-top:5px;" id="inNgayThangXuatBan">Ngày lập báo cáo: ...</p>
+                        <h2 style="font-size:20px; font-weight:bold; color:#000;">BÁO CÁO NHẬT KÝ XUẤT NHẬP VẬT TƯ</h2>
+                        <p style="font-size:12px; font-style:italic; margin-top:5px;" id="inNgayThangXuatBan">Ngày lập: ...</p>
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: var(--mau-nhat); border-radius: 8px; font-weight: bold; font-size: 15px; border-left: 4px solid var(--mau-chinh);">
-                    <div>Tổng khối lượng lọc: <span id="tongSoLuongLoc" style="color: var(--mau-do); font-size: 22px;">0</span></div>
-                    <button class="nut-bam" onclick="xuatBanBaoCaoPDFCaoCap()" style="width: auto; background: var(--mau-do); padding: 8px 15px; font-size: 13px;" data-html2canvas-ignore="true">📄 Tải biểu mẫu PDF</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:15px; background:var(--mau-nhat); border-radius:10px; border-left:5px solid var(--mau-chinh);">
+                    <div style="font-weight:bold; font-size:15px;">Tổng khối lượng đã lọc: <span id="tongSoLuongLoc" style="color:var(--mau-do); font-size:22px; margin-left:8px;">0</span></div>
+                    <button class="nut-bam-chinh" onclick="xuatBanBaoCaoPDFCaoCap()" style="width:auto; padding:10px 20px; background:var(--mau-do);" data-html2canvas-ignore="true"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:5px;">picture_as_pdf</span>Tải file PDF</button>
                 </div>
 
-                <div class="khung-cuon-bang">
+                <div class="vung-cuon-bang">
                     <table id="tableVatTuLedger">
                         <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Khối lượng</th><th>Ghi chú</th><th>Người tạo</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
 
-                <!-- Chữ ký in -->
                 <div class="dau-trang-in-an" id="khuVucChuKyInAn" style="border:none; margin-top:40px; display:none; justify-content:space-around;">
-                    <div style="text-align:center; font-size:13px;">
-                        <p style="font-weight:bold;">NGƯỜI LẬP BIỂU</p>
-                        <p style="font-size:11px; color:#666; margin-bottom:60px;">(Ký và ghi rõ họ tên)</p>
-                        <p style="font-weight:bold; color:#333;" id="chuKyTenNguoiLap">...</p>
+                    <div style="text-align:center; font-size:13px;"><p style="font-weight:bold;">NGƯỜI LẬP BIỂU</p><p style="font-size:11px; color:#666; margin-bottom:60px;">(Ký và ghi rõ họ tên)</p><p style="font-weight:bold; color:#333;" id="chuKyTenNguoiLap">...</p></div>
+                    <div style="text-align:center; font-size:13px;"><p style="font-weight:bold;">GIÁM ĐỐC VẬN HÀNH</p><p style="font-size:11px; color:#666; margin-bottom:60px;">(Phê duyệt)</p><p style="font-weight:bold; color:#000;">HOÀNG VĂN DŨNG</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="phaneCongTrinh" class="khoi-tab-noi-dung">
+            <div class="khung-chua-dong">
+                <div class="cot-hai">
+                    <div class="the-trang-tin">
+                        <h3 style="margin-bottom:15px;">Danh Sách Cơ Sở</h3>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="addInputCT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên tòa nhà mới..."><button onclick="themDanhMucGoc('CongTrinh', 'addInputCT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button></div>
+                        <table><tbody id="bangCoSoGoc"></tbody></table>
                     </div>
-                    <div style="text-align:center; font-size:13px;">
-                        <p style="font-weight:bold;">GIÁM ĐỐC VẬN HÀNH</p>
-                        <p style="font-size:11px; color:#666; margin-bottom:60px;">(Phê duyệt)</p>
-                        <p style="font-weight:bold; color:#000;">HOÀNG VĂN DŨNG</p>
+                </div>
+                <div class="cot-hai">
+                    <div class="the-trang-tin">
+                        <h3 style="margin-bottom:15px;">Danh Mục Vật Tư</h3>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="addInputVT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên vật tư gốc..."><button onclick="themDanhMucGoc('VatTu', 'addInputVT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button></div>
+                        <table><tbody id="bangVatTuGoc"></tbody></table>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- PHÂN HỆ 4: CÔNG TRÌNH VÀ VẬT TƯ -->
-        <div id="phaneCongTrinh" class="khoi-chua-tab">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
-                <div class="the-giao-dien">
-                    <h3 style="margin-bottom:15px;">Danh Sách Cơ Sở</h3>
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="addInputCT" class="o-nhap" style="flex:1; margin-bottom:0;" placeholder="Tên cơ sở mới...">
-                        <button class="nut-bam" style="width:auto; padding:0 20px;" onclick="themDM('CongTrinh', 'addInputCT')">Thêm</button>
-                    </div>
-                    <table id="bangCoSoGoc"><tbody></tbody></table>
+        <div id="phaneTaiKhoan" class="khoi-tab-noi-dung">
+            <div class="the-trang-tin">
+                <h3 style="margin-bottom:15px;">Cấp Tài Khoản Hệ Thống</h3>
+                <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px; margin-bottom:20px;">
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Tài khoản</label><input type="text" id="nvAcc" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Mật khẩu</label><input type="text" id="nvPass" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Phân quyền</label><select id="nvRole" class="o-nhap"><option value="Giám Sát Hiện Trường">Giám Sát</option><option value="Quản Trị Viên">Quản Trị Viên</option></select></div>
+                    <div class="cot-ba" style="width:100%; text-align:right;"><button class="nut-bam-chinh" onclick="khoiTaoMoiNhanSu()" style="width:auto; padding:10px 25px; display:inline-block;">CẤP ACC</button></div>
                 </div>
-                <div class="the-giao-dien">
-                    <h3 style="margin-bottom:15px;">Danh Mục Vật Tư</h3>
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <input type="text" id="addInputVT" class="o-nhap" style="flex:1; margin-bottom:0;" placeholder="Loại vật tư...">
-                        <button class="nut-bam" style="width:auto; padding:0 20px;" onclick="themDM('VatTu', 'addInputVT')">Thêm</button>
-                    </div>
-                    <table id="bangVatTuGoc"><tbody></tbody></table>
+                <div class="vung-cuon-bang">
+                    <table id="tableUserSystem"><thead><tr><th>Tên tài khoản</th><th>Vai trò phân quyền</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
         </div>
 
-        <!-- PHÂN HỆ 5: TÀI KHOẢN -->
-        <div id="phaneTaiKhoan" class="khoi-chua-tab">
-            <div class="the-giao-dien">
-                <h3 style="margin-bottom:15px;">Cấp Tài Khoản Nhân Sự</h3>
-                <div class="luoi-nhap-lieu" style="background:#fafafa; padding:15px; border-radius:10px; margin-bottom:20px;">
-                    <div class="nhom-nhap"><label>Tài khoản</label><input type="text" id="nvTK" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Mật khẩu</label><input type="text" id="nvMK" class="o-nhap"></div>
-                    <div class="nhom-nhap"><label>Vai trò</label><select id="nvVT" class="o-nhap"><option>Giám Sát</option><option>Quản Trị Viên</option></select></div>
-                    <div class="nhom-nhap" style="justify-content:flex-end;"><button class="nut-bam" onclick="taoNhanSu()">CẤP TÀI KHOẢN</button></div>
-                </div>
-                <table id="tableUserSystem"><thead><tr><th>Tài khoản</th><th>Phân quyền</th></tr></thead><tbody></tbody></table>
-            </div>
-        </div>
-
-        <!-- PHÂN HỆ 6: NHẬT KÝ -->
-        <div id="phaneNhatKy" class="khoi-chua-tab">
-            <div class="the-giao-dien">
-                <h3 style="margin-bottom:15px;">Lịch sử Hoạt động</h3>
-                <div class="khung-cuon-bang">
-                    <table id="tableAuditLogs">
-                        <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Thao tác</th><th>Chi tiết</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
+        <div id="phaneNhatKy" class="khoi-tab-noi-dung">
+            <div class="the-trang-tin">
+                <h3 style="margin-bottom:15px;">Lịch Sử Kiểm Toán</h3>
+                <div class="vung-cuon-bang">
+                    <table id="tableAuditLogs"><thead><tr><th>Thời gian</th><th>Tài khoản</th><th>Hành động</th><th>Chi tiết sự kiện</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
         </div>
@@ -361,7 +295,7 @@
 </div>
 
 <script>
-    // Khởi tạo Service Worker PWA
+    // Bật PWA
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
 
     let userHienTai = {};
@@ -369,180 +303,233 @@
 
     // --- 1. XÁC THỰC ---
     async function thucHienXacThuc() {
-        const tai_khoan = document.getElementById('taiKhoanTruyCap').value; 
-        const mat_khau = document.getElementById('matKhauTruyCap').value;
+        const tai_khoan = document.getElementById('taiKhoanTruyCap').value.trim();
+        const mat_khau = document.getElementById('matKhauTruyCap').value.trim();
+        const thongBao = document.getElementById('thongBaoLoiDangNhap');
+        thongBao.innerText = "Đang kết nối...";
+
+        if(!tai_khoan || !mat_khau) return thongBao.innerText = "Điền đủ tài khoản và mật khẩu!";
+
         try {
             const res = await fetch('/api/dang-nhap', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan, mat_khau }) });
             const data = await res.json();
-            if (data.error) document.getElementById('thongBaoLoiDangNhap').innerText = data.error;
+
+            if (data.error) thongBao.innerText = data.error;
             else {
                 userHienTai = data;
-                document.getElementById('khungDangNhap').style.display = 'none'; document.getElementById('giaoDienChinh').style.display = 'block';
-                document.getElementById('tenHienThiNguoiDung').innerText = data.tai_khoan.toUpperCase(); document.getElementById('vaiTroHienThi').innerText = data.vai_tro;
-                taiDuLieuSelectGoc(); taiToanBoDuLieuHeThong();
+                document.getElementById('khungDangNhap').style.display = 'none';
+                document.getElementById('giaoDienChinh').style.display = 'block';
+                document.getElementById('tenHienThiNguoiDung').innerText = data.tai_khoan.toUpperCase();
+                document.getElementById('vaiTroHienThi').innerText = data.vai_tro;
+                if (data.vai_tro === 'Quản Trị Viên') document.getElementById('vungDànhChoQuanTri').style.display = 'block';
+                
+                taiDuLieuSelectGoc();
+                taiToanBoDuLieuHeThong();
             }
-        } catch(e) { document.getElementById('thongBaoLoiDangNhap').innerText = "Mất kết nối Máy chủ!"; }
+        } catch (e) { thongBao.innerText = "Lỗi kết nối máy chủ!"; }
     }
 
-    function latMenuMobile() { document.getElementById('thanhBenNav').classList.toggle('mo-menu'); }
+    function latThanhMenuMobile() { document.getElementById('thanhBenNav').classList.toggle('mo-rong-menu'); }
     function chuyenPhanHe(idTab, nut) {
-        document.querySelectorAll('.khoi-chua-tab').forEach(t => t.classList.remove('kich-hoat'));
-        document.querySelectorAll('.nut-tab').forEach(b => b.classList.remove('dang-hoat-dong'));
-        document.getElementById(idTab).classList.add('kich-hoat'); nut.classList.add('dang-hoat-dong');
-        if(window.innerWidth <= 768) latMenuMobile();
-        if(idTab === 'phaneBaoCao') thucThiLocBaoCaoLive();
+        document.querySelectorAll('.khoi-tab-noi-dung').forEach(t => t.classList.remove('hien-thi-kich-hoat'));
+        document.querySelectorAll('.nut-chuyen-tab').forEach(b => b.classList.remove('dang-hoat-dong'));
+        document.getElementById(idTab).classList.add('hien-thi-kich-hoat'); nut.classList.add('dang-hoat-dong');
+        if (window.innerWidth <= 768) latThanhMenuMobile();
+        if (idTab === 'phaneBaoCao') thucThiLocBaoCaoLive();
     }
 
-    // --- 2. TẢI DỮ LIỆU ĐỒNG BỘ ---
     async function taiDuLieuSelectGoc() {
-        const res = await fetch('/api/danh-muc'); const list = await res.json();
-        const selCT = document.getElementById('frmCongTrinhChung'); const listVT = document.getElementById('goiYVatTuHeThong');
-        selCT.innerHTML = '<option value="">- Chọn công trình -</option>'; listVT.innerHTML = '';
-        list.forEach(i => {
-            if(i.loai === 'CongTrinh') selCT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
-            else listVT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`;
-        });
+        try {
+            const res = await fetch('/api/danh-muc'); const list = await res.json();
+            const sCT = document.getElementById('frmCongTrinhChung'); const dVT = document.getElementById('goiYVatTuHeThong');
+            sCT.innerHTML = '<option value="">- Chọn tòa nhà cơ sở chung -</option>'; dVT.innerHTML = '';
+            list.forEach(i => { if(i.loai === 'CongTrinh') sCT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`; else dVT.innerHTML += `<option value="${i.ten}">`; });
+        } catch(e){}
     }
 
+    // --- 2. XỬ LÝ SONG SONG ĐẢM BẢO TỐC ĐỘ VÀ CHỐNG SẬP (PROMISE.ALL) ---
     async function taiToanBoDuLieuHeThong() {
         try {
-            const r1 = await fetch('/api/nguoi-dung'); const dUser = await r1.json();
-            document.getElementById('kpiNhanSu').innerText = dUser.length;
-            const tbUser = document.querySelector('#tableUserSystem tbody'); tbUser.innerHTML='';
-            dUser.forEach(u => tbUser.innerHTML += `<tr><td><b>${u.tai_khoan}</b></td><td><span style="background:var(--mau-nhat); color:var(--mau-chinh); padding:4px 8px; border-radius:4px;">${u.vai_tro}</span></td></tr>`);
+            // Gọi đồng thời 4 API để tăng tốc độ gấp 4 lần
+            const [resUser, resVatTu, resDM, resNK] = await Promise.all([
+                fetch('/api/nguoi-dung').catch(() => null),
+                fetch('/api/vat-tu').catch(() => null),
+                fetch('/api/danh-muc').catch(() => null),
+                fetch('/api/nhat-ky').catch(() => null)
+            ]);
 
-            const r2 = await fetch('/api/vat-tu'); const dVatTu = await r2.json();
-            duLieuVatTuGocSanhSang = dVatTu; document.getElementById('kpiGiaoDich').innerText = dVatTu.length;
-            const setCT = new Set(); const setVT = new Set();
-            dVatTu.forEach(i => { if(i.ten_cong_trinh && i.ten_cong_trinh !== 'null') setCT.add(i.ten_cong_trinh); if(i.ten_vat_tu && i.ten_vat_tu !== 'null') setVT.add(i.ten_vat_tu); });
-            const locCT = document.getElementById('locCongTrinhBC'); const locVT = document.getElementById('locVatTuBC');
-            locCT.innerHTML = '<option value="ALL">- Tất cả cơ sở -</option>'; locVT.innerHTML = '<option value="ALL">- Tất cả vật tư -</option>';
-            setCT.forEach(ct => locCT.innerHTML += `<option value="${ct}">${ct}</option>`); setVT.forEach(vt => locVT.innerHTML += `<option value="${vt}">${vt}</option>`);
-            thucThiLocBaoCaoLive();
+            // Xử lý Người dùng
+            if (resUser && resUser.ok) {
+                const dUser = await resUser.json();
+                document.getElementById('kpiNhanSu').innerText = dUser.length || 0;
+                const bUser = document.querySelector('#tableUserSystem tbody'); bUser.innerHTML = '';
+                dUser.forEach(u => bUser.innerHTML += `<tr><td><b>${u.tai_khoan}</b></td><td><span style="background:var(--mau-nhat);color:var(--mau-chinh);padding:4px 8px;border-radius:4px;font-weight:600;">${u.vai_tro}</span></td></tr>`);
+            }
 
-            const r3 = await fetch('/api/danh-muc'); const dDM = await r3.json();
-            document.getElementById('kpiCoSo').innerText = dDM.filter(i => i.loai === 'CongTrinh').length;
-            const tbCT = document.querySelector('#bangCoSoGoc tbody'); tbCT.innerHTML=''; const tbVT = document.querySelector('#bangVatTuGoc tbody'); tbVT.innerHTML='';
-            dDM.forEach(i => {
-                const nut = `<button onclick="xoaDM('${i._id}')" style="background:none; border:none; color:var(--mau-do); font-weight:bold; cursor:pointer;">Xóa</button>`;
-                if(i.loai === 'CongTrinh') tbCT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nut}</td></tr>`;
-                else tbVT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nut}</td></tr>`;
-            });
+            // Xử lý Vật tư (Trái tim hệ thống)
+            if (resVatTu && resVatTu.ok) {
+                duLieuVatTuGocSanhSang = await resVatTu.json() || [];
+                document.getElementById('kpiGiaoDich').innerText = duLieuVatTuGocSanhSang.length;
+                
+                const setCT = new Set(); const setVT = new Set();
+                duLieuVatTuGocSanhSang.forEach(i => {
+                    if (i.ten_cong_trinh && i.ten_cong_trinh !== 'null') setCT.add(i.ten_cong_trinh);
+                    if (i.ten_vat_tu && i.ten_vat_tu !== 'null') setVT.add(i.ten_vat_tu);
+                });
 
-            const r4 = await fetch('/api/nhat-ky'); const dNK = await r4.json();
-            const tbNK = document.querySelector('#tableAuditLogs tbody'); tbNK.innerHTML='';
-            dNK.forEach(i => tbNK.innerHTML += `<tr><td style="font-size:12px;">${new Date(i.thoi_gian).toLocaleString('vi-VN')}</td><td><b>${i.nguoi_thuc_hien}</b></td><td><span style="background:#fff3e0; color:#ed6c02; padding:2px 6px; border-radius:4px;">${i.hanh_dong}</span></td><td>${i.chi_tiet}</td></tr>`);
-        } catch (error) { console.error("Lỗi đồng bộ dữ liệu: ", error); }
+                const sCT = document.getElementById('locCongTrinhBC'); const sVT = document.getElementById('locVatTuBC');
+                sCT.innerHTML = '<option value="ALL">- Tất cả các cơ sở -</option>'; sVT.innerHTML = '<option value="ALL">- Tất cả hạng mục -</option>';
+                setCT.forEach(ct => sCT.innerHTML += `<option value="${ct}">${ct}</option>`); setVT.forEach(vt => sVT.innerHTML += `<option value="${vt}">${vt}</option>`);
+                
+                thucThiLocBaoCaoLive();
+            }
+
+            // Xử lý Danh mục
+            if (resDM && resDM.ok) {
+                const dDM = await resDM.json();
+                document.getElementById('kpiCoSo').innerText = dDM.filter(i => i.loai === 'CongTrinh').length || 0;
+                const bCT = document.querySelector('#bangCoSoGoc tbody'); const bVT = document.querySelector('#bangVatTuGoc tbody');
+                bCT.innerHTML = ''; bVT.innerHTML = '';
+                dDM.forEach(i => {
+                    const nutXoa = `<button onclick="gỡBoDanhMucGoc('${i._id}','${i.ten}')" style="background:none; border:none; color:var(--mau-do); font-weight:bold; cursor:pointer;">Xóa</button>`;
+                    if (i.loai === 'CongTrinh') bCT.innerHTML += `<tr><td><b>${i.ten}</b></td><td style="text-align:right;">${nutXoa}</td></tr>`;
+                    else bVT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nutXoa}</td></tr>`;
+                });
+            }
+
+            // Xử lý Nhật ký
+            if (resNK && resNK.ok) {
+                const dNK = await resNK.json();
+                const bNK = document.querySelector('#tableAuditLogs tbody'); bNK.innerHTML = '';
+                dNK.forEach(i => bNK.innerHTML += `<tr><td style="font-size:12px; color:var(--mau-phu);">${new Date(i.thoi_gian).toLocaleString('vi-VN')}</td><td><b>${i.nguoi_thuc_hien}</b></td><td><span style="background:#fff3e0; color:#ed6c02; padding:3px 8px; border-radius:4px; font-weight:bold;">${i.hanh_dong}</span></td><td>${i.chi_tiet}</td></tr>`);
+            }
+        } catch (e) { console.error("Lỗi đồng bộ lõi:", e); }
     }
 
-    // --- 3. BỘ LỌC TÌM KIẾM LIVE ---
+    // --- 3. BỘ LỌC AN TOÀN TẬN GỐC ---
     function thucThiLocBaoCaoLive() {
-        const tuKhoa = document.getElementById('locTimKiem').value.toLowerCase();
-        const ctChon = document.getElementById('locCongTrinhBC').value; const vtChon = document.getElementById('locVatTuBC').value;
-        const tuNgay = document.getElementById('locTuNgay').value; const denNgay = document.getElementById('locDenNgay').value;
+        if(!duLieuVatTuGocSanhSang) return; // Bảo vệ hàm nếu mảng rỗng
+        
+        const chuoiTim = document.getElementById('locTimKiem').value.toLowerCase();
+        const ctChon = document.getElementById('locCongTrinhBC').value;
+        const vtChon = document.getElementById('locVatTuBC').value;
+        const tuNgay = document.getElementById('locTuNgay').value;
+        const denNgay = document.getElementById('locDenNgay').value;
 
-        const tb = document.querySelector('#tableVatTuLedger tbody'); tb.innerHTML = ''; let tongSoLuong = 0;
+        const bodyLedger = document.querySelector('#tableVatTuLedger tbody');
+        bodyLedger.innerHTML = ''; let tongDồn = 0;
 
         duLieuVatTuGocSanhSang.filter(item => {
-            const matchTK = !tuKhoa || (item.ten_cong_trinh && item.ten_cong_trinh.toLowerCase().includes(tuKhoa)) || (item.ten_vat_tu && item.ten_vat_tu.toLowerCase().includes(tuKhoa)) || (item.ghi_chu && item.ghi_chu.toLowerCase().includes(tuKhoa));
-            const matchCT = (ctChon === "ALL" || item.ten_cong_trinh === ctChon); const matchVT = (vtChon === "ALL" || item.ten_vat_tu === vtChon);
-            const matchTuNgay = (!tuNgay || item.ngay_nhap >= tuNgay); const matchDenNgay = (!denNgay || item.ngay_nhap <= denNgay);
-            return matchTK && matchCT && matchVT && matchTuNgay && matchDenNgay;
+            const khopTK = !chuoiTim || (item.ten_cong_trinh && item.ten_cong_trinh.toLowerCase().includes(chuoiTim)) || (item.ten_vat_tu && item.ten_vat_tu.toLowerCase().includes(chuoiTim)) || (item.ghi_chu && item.ghi_chu.toLowerCase().includes(chuoiTim));
+            const khopCT = (ctChon === "ALL" || item.ten_cong_trinh === ctChon);
+            const khopVT = (vtChon === "ALL" || item.ten_vat_tu === vtChon);
+            const khopTu = (!tuNgay || item.ngay_nhap >= tuNgay);
+            const khopDen = (!denNgay || item.ngay_nhap <= denNgay);
+            return khopTK && khopCT && khopVT && khopTu && khopDen;
         }).forEach(item => {
-            tongSoLuong += (Number(item.so_luong) || 0);
-            const ct = (item.ten_cong_trinh === 'null' || !item.ten_cong_trinh) ? '' : item.ten_cong_trinh;
-            const note = (item.ghi_chu === 'null' || !item.ghi_chu) ? '' : item.ghi_chu;
-            tb.innerHTML += `<tr><td>${item.ngay_nhap || ''}</td><td><b>${ct}</b></td><td>${item.ten_vat_tu || ''}</td><td style="color:var(--mau-chinh); font-weight:bold; font-size:15px;">${item.so_luong || 0} ${item.don_vi || ''}</td><td><i>${note}</i></td><td>${item.nguoi_tao || '---'}</td></tr>`;
+            tongDồn += (Number(item.so_luong) || 0);
+            const tenCT = (item.ten_cong_trinh === 'null' || !item.ten_cong_trinh) ? '---' : item.ten_cong_trinh;
+            const gcText = (item.ghi_chu === 'null' || !item.ghi_chu) ? '' : item.ghi_chu;
+            const ngTao = (item.nguoi_tao === 'undefined' || !item.nguoi_tao) ? 'Hệ thống' : item.nguoi_tao;
+
+            bodyLedger.innerHTML += `<tr>
+                <td>${item.ngay_nhap || '---'}</td><td><b>${tenCT}</b></td><td>${item.ten_vat_tu || '---'}</td>
+                <td style="color:var(--mau-chinh); font-weight:bold; font-size:15px;">${item.so_luong || 0} ${item.don_vi || ''}</td>
+                <td><i style="color:var(--mau-phu);">${gcText}</i></td>
+                <td><span style="background:#f0f4f2; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${ngTao}</span></td>
+            </tr>`;
         });
-        document.getElementById('tongSoLuongLoc').innerText = tongSoLuong.toLocaleString('vi-VN');
+        document.getElementById('tongSoLuongLoc').innerText = tongDồn.toLocaleString('vi-VN');
     }
 
-    // --- 4. TƯƠNG TÁC API (THÊM/XÓA) ---
-    async function themDM(loai, id) {
-        const ten = document.getElementById(id).value.trim(); if(!ten) return;
-        await fetch('/api/danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ loai, ten, nguoi_tao: userHienTai.tai_khoan }) });
-        document.getElementById(id).value = ''; taiToanBoDuLieuHeThong(); taiDuLieuSelectGoc();
-    }
-    async function xoaDM(id) {
-        if(!confirm('Xác nhận xóa?')) return;
-        await fetch('/api/xoa-danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id, nguoi_xoa: userHienTai.tai_khoan }) });
-        taiToanBoDuLieuHeThong(); taiDuLieuSelectGoc();
-    }
-    async function taoNhanSu() {
-        const tai_khoan = document.getElementById('nvTK').value; const mat_khau = document.getElementById('nvMK').value; const vai_tro = document.getElementById('nvVT').value;
-        if(!tai_khoan || !mat_khau) return alert('Nhập đủ tài khoản & mật khẩu');
-        const r = await fetch('/api/nguoi-dung', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan, mat_khau, vai_tro, nguoi_tao: userHienTai.tai_khoan }) });
-        if(r.ok) { alert('Thành công!'); document.getElementById('nvTK').value=''; document.getElementById('nvMK').value=''; taiToanBoDuLieuHeThong(); } else alert('Tài khoản đã tồn tại!');
+    // --- 4. GIỌNG NÓI & BẢNG ĐA MỤC ---
+    const thuAmAPI = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    thuAmAPI.lang = 'vi-VN';
+
+    function kichHoatThuAmGiongNoi() {
+        const btn = document.getElementById('trangThaiGhiAm');
+        btn.innerText = "Hệ thống đang mở mic... Đọc lệnh!";
+        btn.style.background = "#ff9800";
+        document.getElementById('bangNhapLieuDong').innerHTML = '';
+        thuAmAPI.start();
     }
 
-    // --- 5. GIỌNG NÓI & LƯU ĐA MỤC ---
-    const thuAm = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); thuAm.lang = 'vi-VN';
-    function batDauGhiAm() { 
-        document.getElementById('trangThaiGhiAm').innerText = 'ĐANG NGHE...'; 
-        document.getElementById('trangThaiGhiAm').style.background = '#4caf50';
-        document.getElementById('trangThaiGhiAm').style.color = 'white';
-        thuAm.start(); 
-    }
-    
-    thuAm.onresult = async (e) => {
-        document.getElementById('trangThaiGhiAm').innerText = 'AI ĐANG BÓC TÁCH...';
-        document.getElementById('trangThaiGhiAm').style.background = '#ff9800';
+    thuAmAPI.onresult = async (e) => {
+        document.getElementById('trangThaiGhiAm').innerText = "AI đang xử lý mảng dữ liệu...";
         const text = e.results[0][0].transcript;
-        const res = await fetch('/api/xuly-giongnoi', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text }) });
-        const d = await res.json();
-        if(d.du_lieu_ai && Array.isArray(d.du_lieu_ai)) {
-            const mangVT = d.du_lieu_ai;
-            if(mangVT.length > 0) {
-                document.getElementById('frmNgayChung').value = mangVT[0].ngay_nhap || '';
-                const oCT = Array.from(document.getElementById('frmCongTrinhChung').options).find(o => o.value === mangVT[0].ten_cong_trinh); 
-                if(oCT) document.getElementById('frmCongTrinhChung').value = oCT.value;
+
+        try {
+            const res = await fetch('/api/xuly-giongnoi', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ text }) });
+            const data = await res.json();
+
+            if (data.du_lieu_ai && Array.isArray(data.du_lieu_ai)) {
+                if (data.du_lieu_ai.length > 0) {
+                    document.getElementById('frmNgayChung').value = data.du_lieu_ai[0].ngay_nhap || '';
+                    const oCT = Array.from(document.getElementById('frmCongTrinhChung').options).find(o => o.value === data.du_lieu_ai[0].ten_cong_trinh);
+                    if (oCT) document.getElementById('frmCongTrinhChung').value = oCT.value;
+                }
+                data.du_lieu_ai.forEach(m => boSungDongThuCong(m.ten_vat_tu, m.so_luong, m.don_vi, m.ghi_chu));
+                const btn = document.getElementById('trangThaiGhiAm');
+                btn.innerText = `Hoàn tất bóc tách ${data.du_lieu_ai.length} món hàng!`;
+                btn.style.background = "var(--mau-chinh)";
             }
-            document.getElementById('bangNhapLieuDong').innerHTML = '';
-            mangVT.forEach(m => boSungDongThuCong(m.ten_vat_tu, m.so_luong, m.don_vi, m.ghi_chu));
-            document.getElementById('trangThaiGhiAm').innerText = `NHẬN DIỆN THÀNH CÔNG ${mangVT.length} MỤC!`;
-            document.getElementById('trangThaiGhiAm').style.background = 'var(--mau-chinh)';
-        }
+        } catch(err) { document.getElementById('trangThaiGhiAm').innerText = "Lỗi kết nối AI!"; }
     };
 
     function boSungDongThuCong(t='', sl='', dv='', note='') {
-        const tr = document.createElement('tr'); tr.className = 'dong-vat-tu';
-        tr.innerHTML = `<td><input type="text" class="o-nhap ip-ten" list="goiYVatTuHeThong" value="${t}" style="margin-bottom:0;" placeholder="Tên vật tư..."></td><td><input type="number" class="o-nhap ip-sl" value="${sl}" style="margin-bottom:0;"></td><td><input type="text" class="o-nhap ip-dv" value="${dv}" style="margin-bottom:0;" placeholder="Bao, xe..."></td><td><input type="text" class="o-nhap ip-note" value="${note}" style="margin-bottom:0;"></td><td style="text-align: center;"><button onclick="this.closest('tr').remove()" style="background:var(--mau-do); color:white; border:none; border-radius:5px; padding:8px; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:16px;">delete</span></button></td>`;
+        const tr = document.createElement('tr'); tr.className = 'dong-hang';
+        tr.innerHTML = `<td><input type="text" class="o-nhap ip-ten" list="goiYVatTuHeThong" value="${t}" style="margin-bottom:0;" placeholder="Tên vật tư..."></td><td><input type="number" class="o-nhap ip-sl" value="${sl}" style="margin-bottom:0;"></td><td><input type="text" class="o-nhap ip-dv" value="${dv}" style="margin-bottom:0;" placeholder="Bao, xe..."></td><td><input type="text" class="o-nhap ip-note" value="${note}" style="margin-bottom:0;" placeholder="Ghi chú..."></td><td style="text-align:center;"><button onclick="this.closest('tr').remove()" style="background:var(--mau-do); color:white; border:none; border-radius:6px; padding:6px; cursor:pointer;"><span class="material-symbols-rounded" style="font-size:16px;">delete</span></button></td>`;
         document.getElementById('bangNhapLieuDong').appendChild(tr);
     }
 
     async function dayMangPhieuLenDatabase() {
         const ngay = document.getElementById('frmNgayChung').value; const ct = document.getElementById('frmCongTrinhChung').value;
-        if(!ngay || !ct) return alert("Chọn Ngày và Cơ sở chung!");
-        const cacDong = document.querySelectorAll('.dong-vat-tu'); const danhSachLuu = [];
-        cacDong.forEach(d => {
-            const ten = d.querySelector('.ip-ten').value; const sl = Number(d.querySelector('.ip-sl').value);
-            if(ten && sl) danhSachLuu.push({ ngay_nhap: ngay, ten_cong_trinh: ct, ten_vat_tu: ten, so_luong: sl, don_vi: d.querySelector('.ip-dv').value, ghi_chu: d.querySelector('.ip-note').value });
+        if (!ngay || !ct) return alert("Chọn Ngày và Tòa nhà chung trước!");
+        const dsLuu = [];
+        document.querySelectorAll('.dong-hang').forEach(d => {
+            const ten = d.querySelector('.ip-ten').value.trim(); const sl = Number(d.querySelector('.ip-sl').value);
+            if (ten && sl) dsLuu.push({ ngay_nhap: ngay, ten_cong_trinh: ct, ten_vat_tu: ten, so_luong: sl, don_vi: d.querySelector('.ip-dv').value, ghi_chu: d.querySelector('.ip-note').value });
         });
-        if(danhSachLuu.length === 0) return alert("Bảng chưa có dữ liệu hợp lệ!");
-        await fetch('/api/luu-vat-tu', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ danh_sach_phieu: danhSachLuu, nguoi_tao: userHienTai.tai_khoan }) });
-        alert(`Đã lưu thành công ${danhSachLuu.length} hạng mục!`); document.getElementById('bangNhapLieuDong').innerHTML = ''; taiToanBoDuLieuHeThong();
+        if (dsLuu.length === 0) return alert("Không có dòng dữ liệu hợp lệ!");
+        await fetch('/api/luu-vat-tu', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ danh_sach_phieu: dsLuu, nguoi_tao: userHienTai.tai_khoan }) });
+        alert(`Đã lưu ${dsLuu.length} món hàng thành công!`); document.getElementById('bangNhapLieuDong').innerHTML = ''; taiToanBoDuLieuHeThong();
+    }
+
+    // --- 5. TƯƠNG TÁC DANH MỤC & USER ---
+    async function themDanhMucGoc(loai, id) {
+        const ten = document.getElementById(id).value.trim(); if(!ten) return;
+        await fetch('/api/danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ loai, ten, nguoi_tao: userHienTai.tai_khoan }) });
+        document.getElementById(id).value = ''; taiToanBoDuLieuHeThong(); taiDuLieuSelectGoc();
+    }
+    async function gỡBoDanhMucGoc(id, ten) {
+        if(!confirm(`Gỡ bỏ "${ten}"?`)) return;
+        await fetch('/api/xoa-danh-muc', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ id, ten, nguoi_xoa: userHienTai.tai_khoan }) });
+        taiToanBoDuLieuHeThong(); taiDuLieuSelectGoc();
+    }
+    async function khoiTaoMoiNhanSu() {
+        const t = document.getElementById('nvAcc').value.trim(); const m = document.getElementById('nvPass').value.trim(); const r = document.getElementById('nvRole').value;
+        if(!t || !m) return alert("Nhập đủ tài khoản & mật khẩu!");
+        const res = await fetch('/api/nguoi-dung', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan: t, mat_khau: m, vai_tro: r, nguoi_tao: userHienTai.tai_khoan }) });
+        if(res.ok) { alert('Cấp tài khoản thành công!'); document.getElementById('nvAcc').value=''; document.getElementById('nvPass').value=''; taiToanBoDuLieuHeThong(); } else alert('Tài khoản đã tồn tại!');
     }
 
     // --- 6. XUẤT PDF CAO CẤP ---
     function xuatBanBaoCaoPDFCaoCap() {
-        document.getElementById('inNgayThangXuatBan').innerText = `Ngày lập báo cáo: ${new Date().toLocaleString('vi-VN')}`;
+        document.getElementById('inNgayThangXuatBan').innerText = `Ngày trích xuất: ${new Date().toLocaleString('vi-VN')}`;
         document.getElementById('chuKyTenNguoiLap').innerText = userHienTai.tai_khoan.toUpperCase();
-
+        
         const vungIn = document.getElementById('vungInAnBaoCaoChuyenDung');
         const header = document.getElementById('khuVucTieuDeInAn');
         const footer = document.getElementById('khuVucChuKyInAn');
-        
-        header.style.display = 'block'; 
-        footer.style.display = 'flex';
+        header.style.display = 'block'; footer.style.display = 'flex';
 
         html2pdf().set({
-            margin: 12, filename: `Bao_Cao_29LAND_${new Date().getTime()}.pdf`,
+            margin: 12, filename: `BaoCao_VatTu_${new Date().getTime()}.pdf`,
             image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: { scale: 2.5, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
         }).from(vungIn).toPdf().get('pdf').then(() => {
-            header.style.display = 'none'; 
-            footer.style.display = 'none';
+            header.style.display = 'none'; footer.style.display = 'none';
         }).save();
     }
 </script>
