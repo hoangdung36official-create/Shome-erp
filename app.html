@@ -118,7 +118,10 @@
             <button id="btnMenuNhapLieu" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneNhapLieu', this)"><span class="material-symbols-rounded">mic</span>Nhập liệu AI</button>
             <button id="btnMenuBaoCao" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneBaoCao', this)"><span class="material-symbols-rounded">receipt_long</span>Sổ Giao dịch</button>
             <button id="btnMenuCongTrinh" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Cơ sở & Tòa nhà</button>
-            
+            <button id="nutCaiDatApp" class="nut-bam-chinh" style="display: none; background-color: #ff9800; margin: 10px 15px; width: calc(100% - 30px); box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);">
+            <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 5px;">download</span> TẢI APP VỀ MÁY
+        </button>
+
             <div id="vungDànhChoQuanTri" style="display:none; border-top: 1px solid #f0f0f0; margin-top: 15px; padding-top: 15px;">
                 <p style="font-size:11px; color:var(--mau-phu); font-weight:600; margin-bottom:10px; padding-left:15px; text-transform:uppercase;">Cấu Hình Hệ Thống</p>
                 <button id="btnMenuTaiKhoan" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneTaiKhoan', this)"><span class="material-symbols-rounded">group</span>Người dùng</button>
@@ -236,7 +239,7 @@
 
                 <div class="vung-cuon-bang">
                     <table id="tableVatTuLedger">
-                        <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Khối lượng</th><th>Ghi chú</th><th>Người tạo</th></tr></thead>
+                        <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Số lượng</th><th>Đơn vị</th><th>Ghi chú</th><th>Người tạo</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -459,8 +462,11 @@
             const ngTao = (item.nguoi_tao === 'undefined' || !item.nguoi_tao) ? 'Hệ thống' : item.nguoi_tao;
 
             bodyLedger.innerHTML += `<tr>
-                <td>${item.ngay_nhap || '---'}</td><td><b>${tenCT}</b></td><td>${item.ten_vat_tu || '---'}</td>
-                <td style="color:var(--mau-chinh); font-weight:bold; font-size:15px;">${item.so_luong || 0} ${item.don_vi || ''}</td>
+                <td>${item.ngay_nhap || '---'}</td>
+                <td><b>${tenCT}</b></td>
+                <td>${item.ten_vat_tu || '---'}</td>
+                <td>${item.so_luong || 0}</td>
+                <td>${item.don_vi || ''}</td>
                 <td><i style="color:var(--mau-phu);">${gcText}</i></td>
                 <td><span style="background:#f0f4f2; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${ngTao}</span></td>
             </tr>`;
@@ -558,6 +564,101 @@
             header.style.display = 'none'; footer.style.display = 'none';
         }).save();
     }
+
+    // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---
+    let suKienCaiDatApp;
+    const nutCaiDatApp = document.getElementById('nutCaiDatApp');
+
+    // 1. Lắng nghe tín hiệu thiết bị cho phép cài App
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Ngăn trình duyệt tự bật bảng thông báo mặc định
+        e.preventDefault();
+        // Lưu lại sự kiện để dùng khi bấm nút
+        suKienCaiDatApp = e;
+        // Bật hiển thị nút "Tải App" màu cam lên
+        if(nutCaiDatApp) nutCaiDatApp.style.display = 'block';
+    });
+
+    // 2. Xử lý khi nhân viên bấm vào nút "Tải App"
+    if(nutCaiDatApp) {
+        nutCaiDatApp.addEventListener('click', async () => {
+            if (!suKienCaiDatApp) return;
+            // Bật bảng hỏi cài đặt chính thức của hệ điều hành
+            suKienCaiDatApp.prompt();
+            // Đợi người dùng phản hồi (Đồng ý / Từ chối)
+            const { outcome } = await suKienCaiDatApp.userChoice;
+            if (outcome === 'accepted') {
+                console.log('App đã được cài đặt thành công!');
+                nutCaiDatApp.style.display = 'none'; // Cài xong thì ẩn nút đi
+            }
+            suKienCaiDatApp = null;
+        });
+    }
+
+    // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---
+    let suKienCaiDatApp;
+    const nutCaiDatApp = document.getElementById('nutCaiDatApp');
+
+    // 1. Lắng nghe tín hiệu thiết bị cho phép cài App
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Ngăn trình duyệt tự bật bảng thông báo mặc định
+        e.preventDefault();
+        // Lưu lại sự kiện để dùng khi bấm nút
+        suKienCaiDatApp = e;
+        // Bật hiển thị nút "Tải App" màu cam lên
+        if(nutCaiDatApp) nutCaiDatApp.style.display = 'block';
+    });
+
+    // 2. Xử lý khi nhân viên bấm vào nút "Tải App"
+    if(nutCaiDatApp) {
+        nutCaiDatApp.addEventListener('click', async () => {
+            if (!suKienCaiDatApp) return;
+            // Bật bảng hỏi cài đặt chính thức của hệ điều hành
+            suKienCaiDatApp.prompt();
+            // Đợi người dùng phản hồi (Đồng ý / Từ chối)
+            const { outcome } = await suKienCaiDatApp.userChoice;
+            if (outcome === 'accepted') {
+                console.log('App đã được cài đặt thành công!');
+                nutCaiDatApp.style.display = 'none'; // Cài xong thì ẩn nút đi
+            }
+            suKienCaiDatApp = null;
+        });
+    }
+
+    // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---
+    let suKienCaiDatApp;
+    const nutCaiDatApp = document.getElementById('nutCaiDatApp');
+
+    // 1. Lắng nghe tín hiệu thiết bị cho phép cài App
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Ngăn trình duyệt tự bật bảng thông báo mặc định
+        e.preventDefault();
+        // Lưu lại sự kiện để dùng khi bấm nút
+        suKienCaiDatApp = e;
+        // Bật hiển thị nút "Tải App" màu cam lên
+        if(nutCaiDatApp) nutCaiDatApp.style.display = 'block';
+    });
+
+    // 2. Xử lý khi nhân viên bấm vào nút "Tải App"
+    if(nutCaiDatApp) {
+        nutCaiDatApp.addEventListener('click', async () => {
+            if (!suKienCaiDatApp) return;
+            // Bật bảng hỏi cài đặt chính thức của hệ điều hành
+            suKienCaiDatApp.prompt();
+            // Đợi người dùng phản hồi (Đồng ý / Từ chối)
+            const { outcome } = await suKienCaiDatApp.userChoice;
+            if (outcome === 'accepted') {
+                console.log('App đã được cài đặt thành công!');
+                nutCaiDatApp.style.display = 'none'; // Cài xong thì ẩn nút đi
+            }
+            suKienCaiDatApp = null;
+        });
+    }
+
+    // 3. Tự động ẩn nút nếu máy đã cài App rồi
+    window.addEventListener('appinstalled', () => {
+        if(nutCaiDatApp) nutCaiDatApp.style.display = 'none';
+    });
 </script>
 </body>
 </html>
