@@ -13,7 +13,7 @@
     
     <style>
         /* COLOR THEME 29LAND */
-        :root { --mau-chinh: #2e7d32; --mau-nhat: #e8f5e9; --mau-nen: #f0f4f2; --mau-chu: #1c2b23; --mau-phu: #75857d; --mau-do: #d32f2f; --mau-xanh-bien: #0288d1; }
+        :root { --mau-chinh: #4acbeb; --mau-nhat: #e8f5e9; --mau-nen: #f0f4f2; --mau-chu: #1c2b23; --mau-phu: #75857d; --mau-do: #d32f2f; --mau-xanh-bien: #0288d1; }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; margin: 0; padding: 0; }
         body { background-color: var(--mau-nen); color: var(--mau-chu); display: block; height: 100vh; overflow: hidden; font-size: 14px; }
         body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 35vh; background: linear-gradient(135deg, #c8e6c9 0%, transparent 100%); z-index: -1; }
@@ -104,14 +104,14 @@
 <div id="giaoDienChinh">
     <header class="thanh-dau-mobile">
         <button onclick="latThanhMenuMobile()" style="background:transparent; border:none; color:var(--mau-chinh); cursor:pointer;"><span class="material-symbols-rounded" style="font-size:26px;">menu</span></button>
-        <span style="font-weight:bold; color:var(--mau-chinh); font-size: 16px;">29LAND DASHBOARD</span>
+        <span style="font-weight:bold; color:var(--mau-chinh); font-size: 16px;">BÁO CÁO VẬT TƯ 29LAND</span>
         <div style="width:26px;"></div>
     </header>
 
     <aside class="thanh-menu-ben" id="thanhBenNav">
         <div class="khu-vuc-logo">
             <div class="logo-khung-chua"><span class="material-symbols-rounded" style="vertical-align: middle;">apartment</span></div>
-            <div class="chu-logo-title">Quản lý & Vận hành<br><span style="font-size:10px; color:var(--mau-phu); text-transform:uppercase;">29LAND BY HOÀNG DŨNG</span></div>
+            <div class="chu-logo-title">Quản lý Vật tư 29LAND<br><span style="font-size:10px; color:var(--mau-phu); text-transform:uppercase;">BY HOÀNG DŨNG</span></div>
         </div>
         <nav class="danh-sach-tab">
             <button id="btnMenuTongQuan" class="nut-chuyen-tab dang-hoat-dong" onclick="chuyenPhanHe('phaneTongQuan', this)"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button>
@@ -253,15 +253,31 @@
                 <div class="cot-hai">
                     <div class="the-trang-tin">
                         <h3 style="margin-bottom:15px;">Danh Sách Cơ Sở</h3>
-                        <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="addInputCT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên tòa nhà mới..."><button onclick="themDanhMucGoc('CongTrinh', 'addInputCT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button></div>
-                        <table><tbody id="bangCoSoGoc"></tbody></table>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <input type="text" id="addInputCT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên tòa nhà mới...">
+                            <button onclick="themDanhMucGoc('CongTrinh', 'addInputCT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button>
+                        </div>
+                        <div class="vung-cuon-bang">
+                            <table>
+                                <thead><tr><th>Tên Cơ Sở / Tòa Nhà</th><th style="text-align:right; width:60px;">Xóa</th></tr></thead>
+                                <tbody id="bangCoSoGoc"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 <div class="cot-hai">
                     <div class="the-trang-tin">
                         <h3 style="margin-bottom:15px;">Danh Mục Vật Tư</h3>
-                        <div style="display:flex; gap:10px; margin-bottom:15px;"><input type="text" id="addInputVT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên vật tư gốc..."><button onclick="themDanhMucGoc('VatTu', 'addInputVT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button></div>
-                        <table><tbody id="bangVatTuGoc"></tbody></table>
+                        <div style="display:flex; gap:10px; margin-bottom:15px;">
+                            <input type="text" id="addInputVT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên vật tư gốc...">
+                            <button onclick="themDanhMucGoc('VatTu', 'addInputVT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button>
+                        </div>
+                        <div class="vung-cuon-bang">
+                            <table>
+                                <thead><tr><th>Tên Vật Tư Tiêu Chuẩn</th><th style="text-align:right; width:60px;">Xóa</th></tr></thead>
+                                <tbody id="bangVatTuGoc"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -388,13 +404,23 @@
             if (resDM && resDM.ok) {
                 const dDM = await resDM.json();
                 document.getElementById('kpiCoSo').innerText = dDM.filter(i => i.loai === 'CongTrinh').length || 0;
-                const bCT = document.querySelector('#bangCoSoGoc tbody'); const bVT = document.querySelector('#bangVatTuGoc tbody');
-                bCT.innerHTML = ''; bVT.innerHTML = '';
-                dDM.forEach(i => {
-                    const nutXoa = `<button onclick="gỡBoDanhMucGoc('${i._id}','${i.ten}')" style="background:none; border:none; color:var(--mau-do); font-weight:bold; cursor:pointer;">Xóa</button>`;
-                    if (i.loai === 'CongTrinh') bCT.innerHTML += `<tr><td><b>${i.ten}</b></td><td style="text-align:right;">${nutXoa}</td></tr>`;
-                    else bVT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nutXoa}</td></tr>`;
-                });
+                
+                // Đã sửa lại lệnh truy xuất đúng ID của thẻ tbody
+                const bCT = document.getElementById('bangCoSoGoc'); 
+                const bVT = document.getElementById('bangVatTuGoc');
+                
+                if (bCT && bVT) {
+                    bCT.innerHTML = ''; 
+                    bVT.innerHTML = '';
+                    dDM.forEach(i => {
+                        const nutXoa = `<button onclick="gỡBoDanhMucGoc('${i._id}','${i.ten}')" style="background:none; border:none; color:var(--mau-do); cursor:pointer;"><span class="material-symbols-rounded" style="font-size:20px; vertical-align:middle;">delete</span></button>`;
+                        if (i.loai === 'CongTrinh') {
+                            bCT.innerHTML += `<tr><td><b>${i.ten}</b></td><td style="text-align:right;">${nutXoa}</td></tr>`;
+                        } else {
+                            bVT.innerHTML += `<tr><td>${i.ten}</td><td style="text-align:right;">${nutXoa}</td></tr>`;
+                        }
+                    });
+                }
             }
 
             // Xử lý Nhật ký
