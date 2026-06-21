@@ -293,15 +293,30 @@
 
         <div id="phaneTaiKhoan" class="khoi-tab-noi-dung">
             <div class="the-trang-tin">
-                <h3 style="margin-bottom:15px;">Cấp Tài Khoản Hệ Thống</h3>
-                <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px; margin-bottom:20px;">
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Tài khoản</label><input type="text" id="nvAcc" class="o-nhap"></div>
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Mật khẩu</label><input type="text" id="nvPass" class="o-nhap"></div>
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Phân quyền</label><select id="nvRole" class="o-nhap"><option value="Giám Sát Hiện Trường">Giám Sát</option><option value="Quản Trị Viên">Quản Trị Viên</option></select></div>
-                    <div class="cot-ba" style="width:100%; text-align:right;"><button class="nut-bam-chinh" onclick="khoiTaoMoiNhanSu()" style="width:auto; padding:10px 25px; display:inline-block;">CẤP ACC</button></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">admin_panel_settings</span> Quản Trị Nhân Sự Nâng Cao</h3>
+                </div>
+                <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px; margin-bottom:20px; border: 1px solid #eee;">
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Tên tài khoản mới</label><input type="text" id="nvAcc" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Mật khẩu khởi tạo</label><input type="text" id="nvPass" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Vai trò hệ thống</label>
+                        <select id="nvRole" class="o-nhap">
+                            <option value="Giám Sát">Giám Sát (Chỉ xem dữ liệu)</option>
+                            <option value="Quản Lý">Quản Lý (Được thao tác)</option>
+                            <option value="Quản Trị Viên">Quản Trị Viên (Toàn quyền)</option>
+                        </select>
+                    </div>
+                    <div class="cot-ba" style="width:100%; text-align:right; margin-top:5px;">
+                        <button class="nut-bam-chinh" onclick="khoiTaoMoiNhanSu()" style="width:auto; padding:10px 25px; display:inline-block; background-color:var(--mau-chinh);">
+                            <span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:5px;">person_add</span> TẠO TÀI KHOẢN MỚI
+                        </button>
+                    </div>
                 </div>
                 <div class="vung-cuon-bang">
-                    <table id="tableUserSystem"><thead><tr><th>Tên tài khoản</th><th>Vai trò phân quyền</th></tr></thead><tbody></tbody></table>
+                    <table id="tableUserSystem">
+                        <thead><tr><th>Tên tài khoản</th><th>Phân quyền</th><th>Trạng thái</th><th style="text-align:right;">Công cụ quản trị</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -345,7 +360,9 @@
                 document.getElementById('giaoDienChinh').style.display = 'block';
                 document.getElementById('tenHienThiNguoiDung').innerText = data.tai_khoan.toUpperCase();
                 document.getElementById('vaiTroHienThi').innerText = data.vai_tro;
-                if (data.vai_tro === 'Quản Trị Viên') document.getElementById('vungDànhChoQuanTri').style.display = 'block';
+                
+                // === LỆNH MỚI: Kích hoạt rào chắn phân quyền ===
+                phanQuyenGiaoDien(data.vai_tro); 
                 
                 taiDuLieuSelectGoc();
                 taiToanBoDuLieuHeThong();
@@ -382,12 +399,29 @@
                 fetch('/api/nhat-ky').catch(() => null)
             ]);
 
-            // Xử lý Người dùng
+            // Xử lý Người dùng (Phiên bản Pro)
             if (resUser && resUser.ok) {
                 const dUser = await resUser.json();
-                document.getElementById('kpiNhanSu').innerText = dUser.length || 0;
+                document.getElementById('kpiNhanSu').innerText = dUser.filter(u => u.trang_thai !== 'Đã nghỉ việc').length || 0;
+                
                 const bUser = document.querySelector('#tableUserSystem tbody'); bUser.innerHTML = '';
-                dUser.forEach(u => bUser.innerHTML += `<tr><td><b>${u.tai_khoan}</b></td><td><span style="background:var(--mau-nhat);color:var(--mau-chinh);padding:4px 8px;border-radius:4px;font-weight:600;">${u.vai_tro}</span></td></tr>`);
+                dUser.forEach(u => {
+                    const tThai = u.trang_thai || 'Đang làm việc';
+                    const badgeTrangThai = tThai === 'Đã nghỉ việc' 
+                        ? `<span style="background:#ffebee;color:#c62828;padding:4px 8px;border-radius:4px;font-weight:600;font-size:11px;">Đã nghỉ việc</span>` 
+                        : `<span style="background:#e8f5e9;color:#2e7d32;padding:4px 8px;border-radius:4px;font-weight:600;font-size:11px;">Đang làm việc</span>`;
+                    
+                    const btnMk = `<button onclick="capLaiMatKhau('${u.tai_khoan}')" style="background:none;border:none;color:#0288d1;cursor:pointer;margin-right:12px;" title="Cấp lại mật khẩu"><span class="material-symbols-rounded">key</span></button>`;
+                    const btnKHoa = `<button onclick="doiTrangThaiNhanSu('${u.tai_khoan}', '${tThai}')" style="background:none;border:none;color:#ed6c02;cursor:pointer;margin-right:12px;" title="Đổi trạng thái"><span class="material-symbols-rounded">block</span></button>`;
+                    const btnXoa = `<button onclick="xoaNhanSu('${u.tai_khoan}')" style="background:none;border:none;color:var(--mau-do);cursor:pointer;" title="Xóa tài khoản"><span class="material-symbols-rounded">delete</span></button>`;
+
+                    bUser.innerHTML += `<tr>
+                        <td><b>${u.tai_khoan}</b></td>
+                        <td><span style="background:var(--mau-nen);color:var(--mau-chu);padding:4px 8px;border-radius:4px;font-weight:bold;font-size:12px;">${u.vai_tro}</span></td>
+                        <td>${badgeTrangThai}</td>
+                        <td style="text-align:right;">${btnMk} ${btnKHoa} ${btnXoa}</td>
+                    </tr>`;
+                });
             }
 
             // Xử lý Vật tư (Trái tim hệ thống)
@@ -585,6 +619,27 @@
         const res = await fetch('/api/nguoi-dung', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan: t, mat_khau: m, vai_tro: r, nguoi_tao: userHienTai.tai_khoan }) });
         if(res.ok) { alert('Cấp tài khoản thành công!'); document.getElementById('nvAcc').value=''; document.getElementById('nvPass').value=''; taiToanBoDuLieuHeThong(); } else alert('Tài khoản đã tồn tại!');
     }
+    async function capLaiMatKhau(tai_khoan) {
+        const mkMoi = prompt(`Nhập mật khẩu mới cho nhân sự [${tai_khoan}]:`);
+        if(!mkMoi) return;
+        const res = await fetch('/api/nguoi-dung/mat-khau', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan, mat_khau_moi: mkMoi, nguoi_thuc_hien: userHienTai.tai_khoan }) });
+        if(res.ok) { alert('Đã cấp lại mật khẩu thành công!'); taiToanBoDuLieuHeThong(); }
+    }
+
+    async function doiTrangThaiNhanSu(tai_khoan, trangThaiHienTai) {
+        if(tai_khoan === userHienTai.tai_khoan) return alert('Bạn không thể tự khóa chính mình!');
+        const trangThaiMoi = trangThaiHienTai === 'Đã nghỉ việc' ? 'Đang làm việc' : 'Đã nghỉ việc';
+        if(!confirm(`Chuyển trạng thái của [${tai_khoan}] thành: ${trangThaiMoi}?`)) return;
+        const res = await fetch('/api/nguoi-dung/trang-thai', { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ tai_khoan, trang_thai: trangThaiMoi, nguoi_thuc_hien: userHienTai.tai_khoan }) });
+        if(res.ok) taiToanBoDuLieuHeThong();
+    }
+
+    async function xoaNhanSu(tai_khoan) {
+        if(tai_khoan === userHienTai.tai_khoan) return alert('Hành động bị từ chối!');
+        if(!confirm(`⚠️ XÓA VĨNH VIỄN tài khoản [${tai_khoan}] khỏi hệ thống?`)) return;
+        const res = await fetch(`/api/nguoi-dung/${tai_khoan}?nguoi_thuc_hien=${userHienTai.tai_khoan}`, { method: 'DELETE' });
+        if(res.ok) taiToanBoDuLieuHeThong();
+    }
 
     // --- 6. XUẤT PDF KHỔ DỌC A4 CAO CẤP CHỐNG CHE/MẤT CHỮ ---
     function xuatBanBaoCaoPDFCaoCap() {
@@ -638,6 +693,38 @@
             ths.forEach(th => { th.style.width = 'auto'; });
             styleTạmThoi.remove();
         }).save();
+    }
+    
+    // --- THUẬT TOÁN KIỂM SOÁT PHÂN QUYỀN (RBAC) ---
+    function phanQuyenGiaoDien(vaiTro) {
+        // 1. Kiểm soát Menu Quản trị (Chỉ Quản trị viên mới thấy menu cài đặt và người dùng)
+        const vungQuanTri = document.getElementById('vungDànhChoQuanTri');
+        if(vungQuanTri) vungQuanTri.style.display = (vaiTro === 'Quản Trị Viên') ? 'block' : 'none';
+
+        // 2. Kiểm soát Thao tác của Giám Sát (Read-only Mode)
+        if (vaiTro === 'Giám Sát') {
+            // Ẩn tất cả các nút Thêm/Lưu/Xóa (Ngoại trừ nút Tải PDF và Tải App)
+            document.querySelectorAll('button:not(.nut-chuyen-tab)').forEach(nut => {
+                const lenh = nut.getAttribute('onclick') || '';
+                if(lenh && !lenh.includes('xuatBanBaoCao') && !lenh.includes('thucHienXacThuc') && nut.id !== 'nutCaiDatApp' && !lenh.includes('location.reload')) {
+                    nut.style.display = 'none';
+                }
+            });
+
+            // Khóa toàn bộ ô nhập liệu (Input/Select), làm xám đi (Ngoại trừ ô lọc tìm kiếm ở Sổ Giao Dịch)
+            document.querySelectorAll('input, select').forEach(o => {
+                if(!o.id.includes('loc') && !o.id.includes('TruyCap')) {
+                    o.disabled = true;
+                    o.style.backgroundColor = '#e0e0e0';
+                    o.style.cursor = 'not-allowed';
+                }
+            });
+
+            // Xóa sổ các cột "Xóa" trên bảng hiển thị
+            document.querySelectorAll('th, td').forEach(o => {
+                if(o.innerText === 'Xóa') o.style.display = 'none';
+            });
+        }
     }
 
     // --- XỬ LÝ NÚT CÀI ĐẶT APP (PWA) ---

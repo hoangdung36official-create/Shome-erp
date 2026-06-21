@@ -101,9 +101,12 @@ app.post('/api/dang-nhap', async (req, res) => {
         const { tai_khoan, mat_khau } = req.body;
         console.log(`Yêu cầu đăng nhập từ tài khoản: ${tai_khoan}`);
         
-        const user = await TaiKhoan.findOne({ tai_khoan, trang_thai: 'Hoạt động' });
+        const user = await TaiKhoan.findOne({ tai_khoan });
         if (!user) {
             return res.status(401).json({ error: "Tài khoản không tồn tại trên hệ thống!" });
+        }
+        if (user.trang_thai === 'Đã nghỉ việc') {
+            return res.status(403).json({ error: "Tài khoản đã bị khóa (Do đã nghỉ việc)!" });
         }
         
         const hopLe = await bcrypt.compare(mat_khau, user.mat_khau);
@@ -264,6 +267,35 @@ app.post('/api/nguoi-dung', async (req, res) => {
 });
 
 app.get('/api/nhat-ky', async (req, res) => res.json(await NhatKy.find().sort({ thoi_gian: -1 }).limit(100)));
+
+// --- BỘ API QUẢN TRỊ NGƯỜI DÙNG NÂNG CAO ---
+
+// 1. Cấp lại mật khẩu mới
+app.put('/api/nguoi-dung/mat-khau', async (req, res) => {
+    try {
+        await NguoiDung.updateOne({ tai_khoan: req.body.tai_khoan }, { mat_khau: req.body.mat_khau_moi });
+        await new NhatKy({ nguoi_thuc_hien: req.body.nguoi_thuc_hien, hanh_dong: 'Cấp lại Mật khẩu', chi_tiet: `Thay đổi mật khẩu cho nhân sự: ${req.body.tai_khoan}` }).save();
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// 2. Thay đổi trạng thái làm việc (Khóa/Mở tài khoản)
+app.put('/api/nguoi-dung/trang-thai', async (req, res) => {
+    try {
+        await NguoiDung.updateOne({ tai_khoan: req.body.tai_khoan }, { trang_thai: req.body.trang_thai });
+        await new NhatKy({ nguoi_thuc_hien: req.body.nguoi_thuc_hien, hanh_dong: 'Đổi Trạng thái', chi_tiet: `Chuyển tài khoản ${req.body.tai_khoan} sang trạng thái: ${req.body.trang_thai}` }).save();
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// 3. Xóa vĩnh viễn nhân sự
+app.delete('/api/nguoi-dung/:taikhoan', async (req, res) => {
+    try {
+        await NguoiDung.deleteOne({ tai_khoan: req.params.taikhoan });
+        await new NhatKy({ nguoi_thuc_hien: req.query.nguoi_thuc_hien, hanh_dong: 'Xóa Nhân sự', chi_tiet: `Xóa vĩnh viễn hệ thống tài khoản: ${req.params.taikhoan}` }).save();
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
 
 // KÍCH HOẠT CỔNG MÁY CHỦ TRUNG TÂM
 const PORT = process.env.PORT || 3000;
