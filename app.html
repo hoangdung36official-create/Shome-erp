@@ -191,7 +191,7 @@
         </div> <div id="phaneNhapLieu" class="khoi-tab-noi-dung">
             <div class="the-trang-tin" style="border: 2px solid var(--mau-chinh);">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">mic</span>Ghi Âm Đọc Lệnh Bàn Giao</h3>
+                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">mic</span>Ghi Âm</h3>
                     <span id="trangThaiGhiAm" style="background:var(--mau-do); color:white; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:bold;">Sẵn sàng</span>
                 </div>
                 <button class="nut-bam-chinh" onclick="kichHoatThuAmGiongNoi()" style="padding:18px; font-size:16px; display:flex; align-items:center; justify-content:center;"><span class="material-symbols-rounded" style="margin-right:8px;">graphic_eq</span> BẤM ĐỂ NÓI LỆNH</button>
@@ -210,7 +210,7 @@
                     </table>
                 </div>
                 <div class="khung-chua-dong" style="margin-top:20px;">
-                    <div class="cot-hai"><button onclick="boSungDongThuCong()" style="padding:12px 15px; background:transparent; border:2px dashed var(--mau-chinh); color:var(--mau-chinh); border-radius:10px; font-weight:bold; cursor:pointer;">+ Thêm dòng thủ công</button></div>
+                    <div class="cot-hai"><button onclick="boSungDongThuCong()" style="padding:12px 15px; background:transparent; border:2px dashed var(--mau-chinh); color:var(--mau-chinh); border-radius:10px; font-weight:bold; cursor:pointer;">+ Thêm thủ công</button></div>
                     <div class="cot-hai" style="text-align:right;"><button class="nut-bam-chinh" onclick="dayMangPhieuLenDatabase()" style="width:auto; padding:12px 30px; background-color:var(--mau-xanh-bien); display:inline-block;">HOÀN THÀNH</button></div>
                 </div>
             </div>
@@ -221,11 +221,11 @@
             <div class="the-trang-tin" data-html2canvas-ignore="true">
                 <h3 style="margin-bottom:15px;">Bộ Lọc Sổ Nhật Ký</h3>
                 <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px;">
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🔍 Tìm kiếm tự do</label><input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCaoLive()"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🔍 Tìm kiếm</label><input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCaoLive()"></div>
                     <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🏢 Cơ sở</label><select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
                     <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🧱 Hạng mục</label><select id="locVatTuBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
-                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">📅 Từ ngày</label><input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
-                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">📅 Đến ngày</label><input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
+                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Từ ngày</label><input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
+                    <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Đến ngày</label><input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
                 </div>
             </div>
 
@@ -239,8 +239,7 @@
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding:15px; background:var(--mau-nhat); border-radius:10px; border-left:5px solid var(--mau-chinh);">
-                    <div style="font-weight:bold; font-size:15px;">Tổng khối lượng đã lọc: <span id="tongSoLuongLoc" style="color:var(--mau-do); font-size:22px; margin-left:8px;">0</span></div>
+                <div style="display:flex; justify-content:flex-end; align-items:center; margin-bottom:15px; padding:15px; background:var(--mau-nhat); border-radius:10px; border-left:5px solid var(--mau-chinh);">
                     <button class="nut-bam-chinh" onclick="xuatBanBaoCaoPDFCaoCap()" style="width:auto; padding:10px 20px; background:var(--mau-do);" data-html2canvas-ignore="true"><span class="material-symbols-rounded" style="vertical-align:middle; font-size:18px; margin-right:5px;">picture_as_pdf</span>Tải file PDF</button>
                 </div>
 
@@ -514,8 +513,6 @@
                 <td><span style="background:#f0f4f2; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${ngTao}</span></td>
             </tr>`;
         });
-
-        document.getElementById('tongSoLuongLoc').innerText = tongDồn.toLocaleString('vi-VN');
 
         const khungTongHop = document.getElementById('khuVucTongHopChiTiet');
         const noiDungTongHop = document.getElementById('noiDungTongHopChiTiet');
