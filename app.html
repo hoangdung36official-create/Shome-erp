@@ -531,7 +531,7 @@
                 });
 
                 const sCT = document.getElementById('locCongTrinhBC'); const sVT = document.getElementById('locVatTuBC');
-                sCT.innerHTML = '<option value="ALL">Toàn bộ Công trình</option>'; sVT.innerHTML = '<option value="ALL">Toàn bộ</option>';
+                sCT.innerHTML = '<option value="ALL">Tất cả</option>'; sVT.innerHTML = '<option value="ALL">Tất cả</option>';
                 setCT.forEach(ct => sCT.innerHTML += `<option value="${ct}">${ct}</option>`); setVT.forEach(vt => sVT.innerHTML += `<option value="${vt}">${vt}</option>`);
                 
                 thucThiLocBaoCaoLive();
