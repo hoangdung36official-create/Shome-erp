@@ -111,6 +111,71 @@
             /* Thu nhỏ kích thước Icon Menu */
             .icon-truy-cap { width: 46px; height: 46px; border-radius: 14px; font-size: 22px; margin: 0 auto 8px; }
             .muc-truy-cap p { font-size: 11px !important; line-height: 1.3; }
+            /* --- 3. SẮP XẾP LẠI BỘ LỌC BÁO CÁO (SỔ GIAO DỊCH) --- */
+            #phaneBaoCao .the-trang-tin:first-of-type .khung-chua-dong {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr); /* Chia 2 cột đều nhau */
+                gap: 12px;
+                margin: 0;
+            }
+    
+            /* Gỡ bỏ định dạng cũ của các cột để theo Grid mới */
+            #phaneBaoCao .the-trang-tin:first-of-type .khung-chua-dong .cot-ba,
+            #phaneBaoCao .the-trang-tin:first-of-type .khung-chua-dong .cot-hai {
+                width: 100% !important;
+                padding: 0;
+                margin-bottom: 0 !important;
+                display: block;
+            }
+    
+            /* Cho ô "Tìm kiếm" (ô đầu tiên) trải dài 100% chiếm cả 2 cột */
+            #phaneBaoCao .the-trang-tin:first-of-type .khung-chua-dong .cot-ba:first-child {
+                grid-column: span 2;
+            }
+    
+            /* Cố định lại khung nhập liệu để chữ không bị chèn/mất */
+            #phaneBaoCao .o-nhap {
+                padding: 10px 12px;
+                margin-bottom: 0;
+                font-size: 13px;
+                height: 42px; /* Fix cứng chiều cao chống móp khung */
+                width: 100%;
+                box-sizing: border-box;
+            }
+    
+            #phaneBaoCao label {
+                margin-bottom: 6px !important;
+                display: inline-block;
+            }
+
+            /* --- 4. THU GỌN KHU VỰC THỐNG KÊ VÀ BẢNG DỮ LIỆU --- */
+            /* Khu vực nút Tải file PDF */
+            #vungInAnBaoCaoChuyenDung > div[style*="display:flex"] {
+                padding: 10px !important;
+                margin-bottom: 15px !important;
+            }
+            #vungInAnBaoCaoChuyenDung button {
+                font-size: 13px !important;
+                padding: 8px 16px !important;
+            }
+
+            /* Thu nhỏ các nhãn (badge) Tổng hợp hạng mục chi tiết */
+            #noiDungTongHopChiTiet div {
+                padding: 6px 10px !important;
+                font-size: 12px !important;
+                margin-right: 6px !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* Tối ưu lề của bảng để chứa được nhiều thông tin hơn khi lướt */
+            .vung-cuon-bang th {
+                padding: 12px 10px !important;
+                font-size: 12px !important;
+            }
+            .vung-cuon-bang td {
+                padding: 12px 10px !important;
+                font-size: 13px !important;
+            }
         }
     </style>
 </head>
