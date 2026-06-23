@@ -77,10 +77,40 @@
             .thanh-menu-ben.mo-rong-menu { transform: translateX(0); }
             .khung-noi-dung { margin-left: 0; padding: 15px; }
             .thanh-dau-mobile { display: flex; }
-            .cot-hai, .cot-ba, .cot-bon { width: 100% !important; display: block; margin-bottom: 16px; }
             .the-trang-tin { padding: 20px; border-radius: 20px; }
-            .icon-truy-cap { width: 55px; height: 55px; border-radius: 16px; font-size: 24px; }
-            .the-kpi-vuong { padding: 18px; }
+
+            /* --- 1. SẮP XẾP LẠI KHỐI KPI (LƯỚI 2 CỘT) --- */
+            #phaneTongQuan > .khung-chua-dong:first-of-type {
+               display: grid;
+               grid-template-columns: repeat(2, 1fr); /* Ép hiển thị 2 cột đều nhau */
+               gap: 12px; /* Khoảng cách giữa các thẻ */
+               margin: 0 0 20px 0;
+            }
+            #phaneTongQuan > .khung-chua-dong:first-of-type .cot-ba,
+            #phaneTongQuan > .khung-chua-dong:first-of-type .cot-bon {
+            width: 100% !important; padding: 0; margin-bottom: 0; display: block;
+            }
+            /* Thu nhỏ kích thước thẻ KPI cho phù hợp màn điện thoại */
+            .the-kpi-vuong { padding: 15px; border-radius: 16px; margin-bottom: 0; min-height: 100px; }
+            .kpi-header { margin-bottom: 10px; }
+            .kpi-icon { width: 36px; height: 36px; margin-right: 10px; border-radius: 10px; }
+            .kpi-icon .material-symbols-rounded { font-size: 20px; }
+            .kpi-header p { font-size: 11px; }
+            .so-lieu-kpi { font-size: 22px; }
+
+            /* --- 2. SẮP XẾP LẠI TRUY CẬP NHANH (LƯỚI 4 CỘT) --- */
+            .the-trang-tin .khung-chua-dong {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr); /* Ép hiển thị 4 icon trên 1 hàng ngang */
+                gap: 15px 10px;
+                margin: 0;
+            }
+            .the-trang-tin .khung-chua-dong .cot-bon {
+                width: 100% !important; padding: 0; margin-bottom: 0; display: block;
+            }
+            /* Thu nhỏ kích thước Icon Menu */
+            .icon-truy-cap { width: 46px; height: 46px; border-radius: 14px; font-size: 22px; margin: 0 auto 8px; }
+            .muc-truy-cap p { font-size: 11px !important; line-height: 1.3; }
         }
     </style>
 </head>
@@ -141,28 +171,22 @@
         
         <div id="phaneTongQuan" class="khoi-tab-noi-dung hien-thi-kich-hoat">
             <div class="khung-chua-dong">
-                <div class="cot-bon">
+                <div class="cot-ba">
                     <div class="the-kpi-vuong">
                         <div class="kpi-header"><div class="kpi-icon"><span class="material-symbols-rounded">home</span></div><div><p style="font-weight:bold;">Cơ Sở</p><p style="font-size:11px; color:var(--mau-phu);">Toàn hệ thống</p></div></div>
                         <div class="so-lieu-kpi" id="kpiCoSo">0</div>
                     </div>
                 </div>
-                <div class="cot-bon">
+                <div class="cot-ba">
                     <div class="the-kpi-vuong">
                         <div class="kpi-header"><div class="kpi-icon" style="background:#e1f5fe; color:#0288d1;"><span class="material-symbols-rounded">description</span></div><div><p style="font-weight:bold;">Giao Dịch</p><p style="font-size:11px; color:var(--mau-phu);">Tổng số phiếu</p></div></div>
                         <div class="so-lieu-kpi" id="kpiGiaoDich">0</div>
                     </div>
                 </div>
-                <div class="cot-bon">
+                <div class="cot-ba">
                     <div class="the-kpi-vuong">
                         <div class="kpi-header"><div class="kpi-icon" style="background:#fff3e0; color:#ed6c02;"><span class="material-symbols-rounded">group</span></div><div><p style="font-weight:bold;">Nhân Sự</p><p style="font-size:11px; color:var(--mau-phu);">Tài khoản nội bộ</p></div></div>
                         <div class="so-lieu-kpi" id="kpiNhanSu">0</div>
-                    </div>
-                </div>
-                <div class="cot-bon">
-                    <div class="the-kpi-vuong">
-                        <div class="kpi-header"><div class="kpi-icon" style="background:#f3e5f5; color:#9c27b0;"><span class="material-symbols-rounded">visibility_off</span></div><div><p style="font-weight:bold;">Doanh Thu</p><p style="font-size:11px; color:var(--mau-phu);">Bảo mật</p></div></div>
-                        <div class="so-lieu-kpi" style="color:var(--mau-chinh);">******</div>
                     </div>
                 </div>
             </div>
@@ -257,7 +281,7 @@
 
                 <div class="dau-trang-in-an" id="khuVucChuKyInAn" style="border:none; margin-top:40px; display:none; justify-content:space-around;">
                     <div style="text-align:center; font-size:13px;"><p style="font-weight:bold;">NGƯỜI LẬP BIỂU</p><p style="font-size:11px; color:#666; margin-bottom:60px;">(Ký và ghi rõ họ tên)</p><p style="font-weight:bold; color:#333;" id="chuKyTenNguoiLap">...</p></div>
-                    <div style="text-align:center; font-size:13px;"><p style="font-weight:bold;">GIÁM ĐỐC VẬN HÀNH</p><p style="font-size:11px; color:#666; margin-bottom:60px;">(Phê duyệt)</p><p style="font-weight:bold; color:#000;">HOÀNG VĂN DŨNG</p></div>
+                    <div style="text-align:center; font-size:13px;"><p style="font-weight:bold;">GIÁM ĐỐC VẬN HÀNH</p><p style="font-size:11px; color:#666; margin-bottom:60px;">(Phê duyệt)</p><p style="font-weight:bold; color:#000;">NHỮ VĂN THIỆN</p></div>
                 </div>
             </div>
         </div>
