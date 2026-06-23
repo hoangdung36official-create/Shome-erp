@@ -209,7 +209,7 @@
             <button id="btnMenuTongQuan" class="nut-chuyen-tab dang-hoat-dong" onclick="chuyenPhanHe('phaneTongQuan', this)"><span class="material-symbols-rounded">dashboard</span>Tổng quan</button>
             <button id="btnMenuNhapLieu" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneNhapLieu', this)"><span class="material-symbols-rounded">mic</span>Nhập liệu AI</button>
             <button id="btnMenuBaoCao" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneBaoCao', this)"><span class="material-symbols-rounded">receipt_long</span>Sổ Giao dịch</button>
-            <button id="btnMenuCongTrinh" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Cơ sở & Tòa nhà</button>
+            <button id="btnMenuCongTrinh" class="nut-chuyen-tab" onclick="chuyenPhanHe('phaneCongTrinh', this)"><span class="material-symbols-rounded">domain</span>Công trình & Tòa nhà</button>
             <button id="nutCaiDatApp" class="nut-bam-chinh" style="display: none; background-color: #ff9800; margin: 10px 15px; width: calc(100% - 30px); box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);">
                 <span class="material-symbols-rounded" style="vertical-align: middle; margin-right: 5px;">download</span> TẢI APP VỀ MÁY
             </button>
@@ -238,7 +238,7 @@
             <div class="khung-chua-dong">
                 <div class="cot-ba">
                     <div class="the-kpi-vuong">
-                        <div class="kpi-header"><div class="kpi-icon"><span class="material-symbols-rounded">home</span></div><div><p style="font-weight:bold;">Cơ Sở</p><p style="font-size:11px; color:var(--mau-phu);">Toàn hệ thống</p></div></div>
+                        <div class="kpi-header"><div class="kpi-icon"><span class="material-symbols-rounded">home</span></div><div><p style="font-weight:bold;">Công Trình</p><p style="font-size:11px; color:var(--mau-phu);">Toàn hệ thống</p></div></div>
                         <div class="so-lieu-kpi" id="kpiCoSo">0</div>
                     </div>
                 </div>
@@ -269,7 +269,7 @@
                     </div>
                     <div class="cot-bon muc-truy-cap" id="truyCapNhanhCaiDat" onclick="document.getElementById('btnMenuCongTrinh').click()">
                         <div class="icon-truy-cap" style="background: linear-gradient(135deg, #78909c, #455a64); color: white;"><span class="material-symbols-rounded">settings</span></div>
-                        <p style="font-weight:600; font-size:13px; color:var(--mau-chu);">Cơ sở & Vật tư</p>
+                        <p style="font-weight:600; font-size:13px; color:var(--mau-chu);">Công Trình & Vật tư</p>
                     </div>
                     <div class="cot-bon muc-truy-cap" id="truyCapNhanhNhanSu" onclick="document.getElementById('btnMenuTaiKhoan').click()">
                         <div class="icon-truy-cap" style="background: linear-gradient(135deg, #ab47bc, #6a1b9a); color: white;"><span class="material-symbols-rounded">group_add</span></div>
@@ -289,8 +289,8 @@
             <div class="the-trang-tin">
                 <h3 style="margin-bottom:15px; border-bottom:1px solid #f0f0f0; padding-bottom:10px;">Chi tiết lô hàng phân tích</h3>
                 <div class="khung-chua-dong" style="background:#f8fafc; padding:15px; border-radius:12px; margin-bottom:15px;">
-                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);">Ngày ghi nhận chung</label><input type="date" id="frmNgayChung" class="o-nhap" style="margin-bottom:0;"></div>
-                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);">Cơ sở / Tòa nhà chung</label><select id="frmCongTrinhChung" class="o-nhap" style="margin-bottom:0;"></select></div>
+                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);">Ngày Nhận hàng</label><input type="date" id="frmNgayChung" class="o-nhap" style="margin-bottom:0;"></div>
+                    <div class="cot-hai"><label style="font-weight:600; display:block; margin-bottom:5px; color:var(--mau-phu);"> Chọn Công Trình</label><select id="frmCongTrinhChung" class="o-nhap" style="margin-bottom:0;"></select></div>
                 </div>
                 <div class="vung-cuon-bang">
                     <table>
@@ -311,7 +311,7 @@
                 <h3 style="margin-bottom:15px;">Bộ Lọc Sổ Nhật Ký</h3>
                 <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px;">
                     <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🔍 Tìm kiếm</label><input type="text" id="locTimKiem" class="o-nhap" placeholder="Gõ từ khóa..." onkeyup="thucThiLocBaoCaoLive()"></div>
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🏢 Cơ sở</label><select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🏢 Công Trình</label><select id="locCongTrinhBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
                     <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">🧱 Hạng mục</label><select id="locVatTuBC" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></select></div>
                     <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Từ ngày</label><input type="date" id="locTuNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
                     <div class="cot-hai"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Đến ngày</label><input type="date" id="locDenNgay" class="o-nhap" onchange="thucThiLocBaoCaoLive()"></div>
@@ -355,14 +355,14 @@
             <div class="khung-chua-dong">
                 <div class="cot-hai">
                     <div class="the-trang-tin">
-                        <h3 style="margin-bottom:15px;">Danh Sách Cơ Sở</h3>
+                        <h3 style="margin-bottom:15px;">Danh Sách Công Trình</h3>
                         <div style="display:flex; gap:10px; margin-bottom:15px;">
                             <input type="text" id="addInputCT" class="o-nhap" style="margin-bottom:0;" placeholder="Tên tòa nhà mới...">
                             <button onclick="themDanhMucGoc('CongTrinh', 'addInputCT')" class="nut-bam-chinh" style="width:80px; padding:12px 0;">Thêm</button>
                         </div>
                         <div class="vung-cuon-bang">
                             <table>
-                                <thead><tr><th>Tên Cơ Sở / Tòa Nhà</th><th style="text-align:right; width:60px;">Xóa</th></tr></thead>
+                                <thead><tr><th>Tên Công Trình</th><th style="text-align:right; width:60px;">Xóa</th></tr></thead>
                                 <tbody id="bangCoSoGoc"></tbody>
                             </table>
                         </div>
@@ -389,16 +389,16 @@
         <div id="phaneTaiKhoan" class="khoi-tab-noi-dung">
             <div class="the-trang-tin">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
-                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">admin_panel_settings</span> Quản Trị Nhân Sự Nâng Cao</h3>
+                    <h3 style="color:var(--mau-chinh);"><span class="material-symbols-rounded" style="vertical-align:bottom; margin-right:5px;">admin_panel_settings</span> Quản Trị Nhân Sự</h3>
                 </div>
                 <div class="khung-chua-dong" style="background:#fafafa; padding:15px; border-radius:12px; margin-bottom:20px; border: 1px solid #eee;">
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Tên tài khoản mới</label><input type="text" id="nvAcc" class="o-nhap"></div>
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Mật khẩu khởi tạo</label><input type="text" id="nvPass" class="o-nhap"></div>
-                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Vai trò hệ thống</label>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Tài khoản mới</label><input type="text" id="nvAcc" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Mật khẩu</label><input type="text" id="nvPass" class="o-nhap"></div>
+                    <div class="cot-ba"><label style="font-weight:600; font-size:12px; color:var(--mau-phu);">Vai trò</label>
                         <select id="nvRole" class="o-nhap">
-                            <option value="Giám Sát">Giám Sát (Chỉ xem dữ liệu)</option>
-                            <option value="Quản Lý">Quản Lý (Được thao tác)</option>
-                            <option value="Quản Trị Viên">Quản Trị Viên (Toàn quyền)</option>
+                            <option value="Giám Sát">Giám Sát</option>
+                            <option value="Quản Lý">Quản Lý</option>
+                            <option value="Quản Trị Viên">Quản Trị Viên</option>
                         </select>
                     </div>
                     <div class="cot-ba" style="width:100%; text-align:right; margin-top:5px;">
@@ -418,7 +418,7 @@
 
         <div id="phaneNhatKy" class="khoi-tab-noi-dung">
             <div class="the-trang-tin">
-                <h3 style="margin-bottom:15px;">Lịch Sử Kiểm Toán</h3>
+                <h3 style="margin-bottom:15px;">Lịch Sử Hoạt Động</h3>
                 <div class="vung-cuon-bang">
                     <table id="tableAuditLogs"><thead><tr><th>Thời gian</th><th>Tài khoản</th><th>Hành động</th><th>Chi tiết sự kiện</th></tr></thead><tbody></tbody></table>
                 </div>
@@ -482,7 +482,7 @@
         try {
             const res = await fetch('/api/danh-muc'); const list = await res.json();
             const sCT = document.getElementById('frmCongTrinhChung'); const dVT = document.getElementById('goiYVatTuHeThong');
-            sCT.innerHTML = '<option value="">- Chọn tòa nhà cơ sở chung -</option>'; dVT.innerHTML = '';
+            sCT.innerHTML = '<option value="">Chọn Công trình</option>'; dVT.innerHTML = '';
             list.forEach(i => { if(i.loai === 'CongTrinh') sCT.innerHTML += `<option value="${i.ten}">${i.ten}</option>`; else dVT.innerHTML += `<option value="${i.ten}">`; });
         } catch(e){}
     }
@@ -531,7 +531,7 @@
                 });
 
                 const sCT = document.getElementById('locCongTrinhBC'); const sVT = document.getElementById('locVatTuBC');
-                sCT.innerHTML = '<option value="ALL">- Tất cả các cơ sở -</option>'; sVT.innerHTML = '<option value="ALL">- Tất cả hạng mục -</option>';
+                sCT.innerHTML = '<option value="ALL">Toàn bộ Công trình</option>'; sVT.innerHTML = '<option value="ALL">Toàn bộ</option>';
                 setCT.forEach(ct => sCT.innerHTML += `<option value="${ct}">${ct}</option>`); setVT.forEach(vt => sVT.innerHTML += `<option value="${vt}">${vt}</option>`);
                 
                 thucThiLocBaoCaoLive();
