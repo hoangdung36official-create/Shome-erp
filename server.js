@@ -135,6 +135,27 @@ app.post('/api/luu-vat-tu', async (req, res) => {
 });
 
 app.get('/api/vat-tu', async (req, res) => res.json(await VatTu.find().sort({ ngay_nhap: -1, thoi_gian_tao: -1 })));
+// Cập nhật (Sửa) phiếu giao dịch
+app.put('/api/vat-tu/:id', async (req, res) => {
+    try {
+        const dataMoi = req.body.du_lieu;
+        await VatTu.findByIdAndUpdate(req.params.id, dataMoi);
+        await new NhatKy({ nguoi_thuc_hien: req.body.nguoi_thuc_hien, hanh_dong: 'Sửa phiếu', chi_tiet: `Cập nhật số liệu vật tư: ${dataMoi.ten_vat_tu} tại ${dataMoi.ten_cong_trinh}` }).save();
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// Xóa vĩnh viễn phiếu giao dịch
+app.delete('/api/vat-tu/:id', async (req, res) => {
+    try {
+        const phieu = await VatTu.findById(req.params.id);
+        if(!phieu) return res.status(404).json({error: "Không tìm thấy"});
+        await VatTu.findByIdAndDelete(req.params.id);
+        await new NhatKy({ nguoi_thuc_hien: req.query.nguoi_thuc_hien, hanh_dong: 'Xóa phiếu', chi_tiet: `Xóa giao dịch vật tư: ${phieu.ten_vat_tu} (${phieu.so_luong} ${phieu.don_vi})` }).save();
+        res.json({ success: true });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
 app.get('/api/danh-muc', async (req, res) => res.json(await DanhMuc.find()));
 
 app.post('/api/danh-muc', async (req, res) => {

@@ -339,7 +339,7 @@
 
                 <div class="vung-cuon-bang">
                     <table id="tableVatTuLedger">
-                        <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Số lượng</th><th>Đơn vị</th><th>Ghi chú</th><th>Người tạo</th></tr></thead>
+                        <thead><tr><th>Ngày</th><th>Công trình</th><th>Vật tư</th><th>Số lượng</th><th>Đơn vị</th><th>Ghi chú</th><th>Người tạo</th><th class="cot-thao-tac" data-html2canvas-ignore="true" style="text-align:center;">Thao tác</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -426,9 +426,31 @@
         </div>
 
     </main>
-</div>
 
-<script>
+    <div id="khungSuaGiaoDich" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div style="background:white; padding:25px; border-radius:20px; width:90%; max-width:450px; box-shadow:0 15px 40px rgba(0,0,0,0.2);">
+            <h3 style="color:var(--mau-chinh); margin-bottom:15px; font-size:18px;">✏️ Chỉnh sửa phiếu giao dịch</h3>
+            <input type="hidden" id="editId">
+            <div style="display:flex; gap:12px; margin-bottom:12px;">
+                <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Ngày</label><input type="date" id="editNgay" class="o-nhap" style="margin-bottom:0;"></div>
+                <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Công trình</label><select id="editCongTrinh" class="o-nhap" style="margin-bottom:0;"></select></div>
+            </div>
+            <label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Vật tư</label>
+            <input type="text" id="editVatTu" class="o-nhap" list="goiYVatTuHeThong" style="margin-bottom:12px;">
+            <div style="display:flex; gap:12px; margin-bottom:12px;">
+                <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Số lượng</label><input type="number" id="editSoLuong" class="o-nhap" style="margin-bottom:0;"></div>
+                <div style="flex:1;"><label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Đơn vị</label><input type="text" id="editDonVi" class="o-nhap" style="margin-bottom:0;"></div>
+            </div>
+            <label style="font-size:12px; font-weight:600; color:var(--mau-phu);">Ghi chú</label>
+            <input type="text" id="editGhiChu" class="o-nhap">
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:15px;">
+                <button onclick="document.getElementById('khungSuaGiaoDich').style.display='none'" style="padding:12px 20px; border:none; background:#edf2f7; color:var(--mau-chu); border-radius:12px; cursor:pointer; font-weight:bold;">Hủy bỏ</button>
+                <button onclick="luuChinhSuaGiaoDich()" style="padding:12px 20px; border:none; background:var(--mau-xanh-bien); color:white; border-radius:12px; cursor:pointer; font-weight:bold;">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+
+</div> <script>
     // Bật PWA
     if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js').catch(()=>{}); }); }
 
@@ -571,7 +593,7 @@
 
         const bodyLedger = document.querySelector('#tableVatTuLedger tbody');
         bodyLedger.innerHTML = ''; 
-        let tongDồn = 0; let khoTongHopVatTu = {}; 
+        let khoTongHopVatTu = {}; 
 
         duLieuVatTuGocSanhSang.filter(item => {
             const khopTK = !chuoiTim || (item.ten_cong_trinh && item.ten_cong_trinh.toLowerCase().includes(chuoiTim)) || (item.ten_vat_tu && item.ten_vat_tu.toLowerCase().includes(chuoiTim)) || (item.ghi_chu && item.ghi_chu.toLowerCase().includes(chuoiTim));
@@ -582,7 +604,6 @@
             return khopTK && khopCT && khopVT && khopTu && khopDen;
         }).forEach(item => {
             const sLuong = Number(item.so_luong) || 0;
-            tongDồn += sLuong;
 
             const tenKey = (item.ten_vat_tu || 'Khác').trim();
             const donViKey = (item.don_vi || '').trim();
@@ -595,11 +616,16 @@
             const gcText = (item.ghi_chu === 'null' || !item.ghi_chu) ? '' : item.ghi_chu;
             const ngTao = (item.nguoi_tao === 'undefined' || !item.nguoi_tao) ? 'Hệ thống' : item.nguoi_tao;
 
+            // Thêm 2 nút bấm với ID bảo mật chống vỡ code
+            const btnSua = `<button class="nut-thao-tac" onclick="moHopThoaiSua('${item._id}')" style="background:none; border:none; color:#0288d1; cursor:pointer; margin-right:10px;" title="Sửa"><span class="material-symbols-rounded">edit</span></button>`;
+            const btnXoa = `<button class="nut-thao-tac" onclick="xoaGiaoDich('${item._id}')" style="background:none; border:none; color:var(--mau-do); cursor:pointer;" title="Xóa"><span class="material-symbols-rounded">delete</span></button>`;
+
             bodyLedger.innerHTML += `<tr>
                 <td>${item.ngay_nhap || '---'}</td><td><b>${tenCT}</b></td><td>${item.ten_vat_tu || '---'}</td>
                 <td>${sLuong.toLocaleString('vi-VN')}</td><td>${item.don_vi || ''}</td>
                 <td><i style="color:var(--mau-phu);">${gcText}</i></td>
                 <td><span style="background:#f0f4f2; padding:3px 8px; border-radius:6px; font-size:11px; font-weight:bold;">${ngTao}</span></td>
+                <td class="cot-thao-tac" data-html2canvas-ignore="true" style="text-align:center; white-space:nowrap;">${btnSua} ${btnXoa}</td>
             </tr>`;
         });
 
@@ -617,6 +643,57 @@
         } else {
             khungTongHop.style.display = 'none'; noiDungTongHop.innerHTML = '';
         }
+    }
+
+    // --- TÍNH NĂNG SỬA/XÓA GIAO DỊCH CHUYÊN NGHIỆP ---
+    async function xoaGiaoDich(id) {
+        if(!confirm("⚠️ Bạn có chắc chắn muốn xóa vĩnh viễn phiếu này không?")) return;
+        try {
+            const res = await fetch(`/api/vat-tu/${id}?nguoi_thuc_hien=${userHienTai.tai_khoan}`, { method: 'DELETE' });
+            if(res.ok) { taiToanBoDuLieuHeThong(); }
+        } catch(e) { alert("Lỗi xóa giao dịch!"); }
+    }
+
+    function moHopThoaiSua(id) {
+        const phieu = duLieuVatTuGocSanhSang.find(i => i._id === id);
+        if(!phieu) return;
+
+        document.getElementById('editId').value = phieu._id;
+        document.getElementById('editNgay').value = phieu.ngay_nhap || '';
+        
+        document.getElementById('editCongTrinh').innerHTML = document.getElementById('frmCongTrinhChung').innerHTML;
+        document.getElementById('editCongTrinh').value = phieu.ten_cong_trinh === 'null' ? '' : phieu.ten_cong_trinh;
+
+        document.getElementById('editVatTu').value = phieu.ten_vat_tu === 'null' ? '' : phieu.ten_vat_tu;
+        document.getElementById('editSoLuong').value = Number(phieu.so_luong) || 0;
+        document.getElementById('editDonVi').value = phieu.don_vi || '';
+        document.getElementById('editGhiChu').value = phieu.ghi_chu === 'null' ? '' : phieu.ghi_chu;
+
+        document.getElementById('khungSuaGiaoDich').style.display = 'flex';
+    }
+
+    async function luuChinhSuaGiaoDich() {
+        const id = document.getElementById('editId').value;
+        const du_lieu = {
+            ngay_nhap: document.getElementById('editNgay').value,
+            ten_cong_trinh: document.getElementById('editCongTrinh').value,
+            ten_vat_tu: document.getElementById('editVatTu').value,
+            so_luong: Number(document.getElementById('editSoLuong').value),
+            don_vi: document.getElementById('editDonVi').value,
+            ghi_chu: document.getElementById('editGhiChu').value
+        };
+
+        try {
+            const res = await fetch(`/api/vat-tu/${id}`, { 
+                method: 'PUT', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ du_lieu, nguoi_thuc_hien: userHienTai.tai_khoan }) 
+            });
+            if(res.ok) {
+                document.getElementById('khungSuaGiaoDich').style.display = 'none';
+                taiToanBoDuLieuHeThong();
+            }
+        } catch(e) { alert("Lỗi lưu cập nhật!"); }
     }
 
     const thuAmAPI = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); thuAmAPI.lang = 'vi-VN';
@@ -711,7 +788,7 @@
         table.style.tableLayout = 'fixed'; table.style.width = '100%';
         const ths = table.querySelectorAll('thead th');
         const tyLeCotDocA4 = ['13%', '23%', '17%', '12%', '10%', '17%', '8%'];
-        ths.forEach((th, i) => { th.style.width = tyLeCotDocA4[i]; });
+        ths.forEach((th, i) => { if(tyLeCotDocA4[i]) th.style.width = tyLeCotDocA4[i]; });
 
         const styleTạmThoi = document.createElement('style');
         styleTạmThoi.innerHTML = `
@@ -761,8 +838,10 @@
                 }
             });
             document.querySelectorAll('th, td').forEach(o => {
-                if(o.innerText === 'Xóa' || o.innerText === 'Công cụ quản trị') o.style.display = 'none';
+                if(o.innerText === 'Xóa' || o.innerText === 'Công cụ quản trị' || o.innerText === 'Thao tác') o.style.display = 'none';
             });
+            // Ẩn cột thao tác của sổ giao dịch
+            document.querySelectorAll('.cot-thao-tac').forEach(o => o.style.display = 'none');
         }
     }
 
